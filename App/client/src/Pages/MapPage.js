@@ -17,15 +17,15 @@ export const MapPage = () => {
     Axios.defaults.withCredentials = true;
 
     useEffect(() => {
-        Axios.get("http://192.168.2.10:3001/login").then((response)=>{
-            if(response.data.loggedIn === true) {
-                console.log(response.data.loggedIn);
-                console.log("logged in");
-                setloggedInUser(response.data.user[0].username);
-            }else{
-                console.log("not logged in");
-                navigate("/");
-            }
+        Axios.get("http://192.168.2.2:3001/login").then((response) => {
+          if (response.data.loggedIn === true) {
+            console.log(response.data.loggedIn);
+            console.log("logged in");
+            setloggedInUser(response.data.user[0].username);
+          } else {
+            console.log("not logged in");
+            navigate("/");
+          }
         });
     }, [navigate])
 

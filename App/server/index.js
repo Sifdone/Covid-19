@@ -9,94 +9,127 @@ const session = require('express-session');
 const testData = require('./data/testData.json');
 
 
-const networkAdress = "http://192.168.2.10:3000";
-const saltRounds = 10;
-
-
+const networkAdress = "http://192.168.2.2:3000";
+const saltRounds = 10; //Hashing
 
 app.use(express.json());
-app.use(cors({
+app.use(
+  cors({
     origin: ["http://localhost:3000", networkAdress],
-    methods: ['GET', 'POST'],
-    credentials: true
-}));
+    methods: ["GET", "POST"],
+    credentials: true,
+  })
+);
 
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
-app.use(session({
-    key: 'userId',
-    secret: 'covidweb',
+app.use(
+  session({
+    key: "userId",
+    secret: "covidweb",
     resave: false,
     saveUninitialized: false,
     cookie: {
-        maxAge: 600000,
-    }, 
+      maxAge: 60000,
+    },
+  })
+);
 
-}))
-
+//Database details
 const db = mysql.createConnection({
-    user: 'root',
-    host: 'localhost',
-    password: 'test',
-    database: 'covidweb'
-
-});
-app.get("/login", (req, res)=>{
-    if(req.session.user){
-        res.send({loggedIn: true, user: req.session.user});
-    }else{
-        res.send({loggedIn: false});
-    }    
-})
-
-app.post('/login', (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
-
-    db.query('SELECT * FROM users WHERE username= ?', //Each user has unique password
-    username,
-    (err, result) => {
-        if(err){
-            res.send({err: err})
-        }
-        if(result.length > 0){
-            bcrypt.compare(password, result[0].password, (error, response) => {
-                if(response){
-                    req.session.user = result;
-                    console.log(req.session.user);
-                    res.send(result);
-                }else{
-                    res.send({message: "Wrong username/password combination"});
-                }
-                
-            })
-        }else{
-            res.send({message: "User doens't exist"});
-        }
-    }
-    );
+  user: "root",
+  host: "localhost",
+  password: "",
+  database: "covidweb",
 });
 
-app.post('/register', (req, res) => {
-    const username = req.body.username
-    const password = req.body.password
+//Login API
+app.get("/login", (req, res) => {
+  if (req.session.user) {
+    res.send({ loggedIn: true, user: req.session.user });
+  } else {
+    res.send({ loggedIn: false });
+  }
+});
 
-    bcrypt.hash(password,saltRounds, (err, hash) => {
-        if (err){
-            console.log(err);
+app.post("/login", (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  try {
+    db.query(
+      "SELECT * FROM users WHERE username= ?", //Each user has unique password
+      username,
+      (err, result) => {
+        if (err) {
+          res.send({ err: err });
         }
-        db.query('INSERT INTO users (username,password) VALUES (?,?)',
-        [username,hash],
-        (err, result) => {
-            if(err){
-                console.log(err)
+        if (typeof result === "undefined") {
+          throw new Error("Database not mounted"); //Fix error - What happens when db is offline
+        }
+        if (result.length > 0) {
+          bcrypt.compare(password, result[0].password, (error, response) => {
+            if (response) {
+              req.session.user = result;
+              console.log(req.session.user);
+              res.send(result);
             } else {
-                res.send("User Created");
+              res.send({ message: "Wrong username/password combination" });
             }
-        });    
-    })
+          });
+        } else {
+          res.send({ message: "User doens't exist" });
+        }
+      }
+    );
+  } catch (error) {
+    res.send({ message: "This service is currenty down" });
+  }
 });
+
+//Register API
+app.post("/register", (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  bcrypt.hash(password, saltRounds, (err, hash) => {
+    if (err) {
+      console.log(err);
+    }
+    db.query(
+      "INSERT INTO users (username,password) VALUES (?,?)",
+      [username, hash],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          res.send("User Created");
+        }
+      }
+    );
+  });
+});
+
+//Register visit API
+app.post("/visit", (req, res) => {
+  const userId = req.body.user;
+  const locationId = req.body.location;
+
+  db.query(
+    "INSERT INTO visits (USER_ID,LOCATION_ID) VALUES (?,?)",
+    [userId, locationId],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Visit Registered");
+      }
+    }
+  );
+});
+
+
 
 
 

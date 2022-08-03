@@ -6,6 +6,8 @@ import { useState, useEffect } from "react";
 import ChangeMapView from "./ChangeMapView";
 import testData from "../../data/starting_pois_test2.json";
 import styled from "styled-components";
+import DropdownList from "react-widgets/DropdownList";
+import "react-widgets/styles.css";
 
 // Icons
 let currentLocationIcon = L.icon({
@@ -34,29 +36,52 @@ let redPOIIcon = L.icon({
   popupAnchor: [0, -20],
 });
 
-const CovidMap = ({ selectedPOI,selectedType }) => {
-  const [state, setState] = useState({ lat: 38.265524, lng: 21.749094 });   //georgiou: { lat: 38.245987, lng: 21.735366 }
+const CovidMap = ({ selectedPOI, selectedType }) => {
+  const [state, setState] = useState({ lat: 38.26473, lng: 21.745822 }); //georgiou: { lat: 38.245987, lng: 21.735366 } //near zacherino: {lat: 38.264730, lng: 21.745822}    test: lat: 38.265524, lng: 21.749094 }
   const [loggedInUser, setloggedInUser] = useState();
   const [currentPOI, setcurrentPOI] = useState({});
+  const [visitRegistered, setVisitRegistered] = useState(false);
   Axios.defaults.withCredentials = true;
 
   //Checks if a user is logged in upon loading |
+
   //Gets location after login check | maybe check anyways?
   //We will need to check for disctance to all objects in database - performance? | keep in mind getLocation is asynchr - needs to be finished to compare
   useEffect(() => {
-    Axios.get("http://192.168.2.10:3001/login").then((response) => {
+    Axios.get("http://192.168.2.2:3001/login").then((response) => {
       if (response.data.loggedIn === true) {
-        setloggedInUser(response.data.user[0].username);
-        getLocation();
+        setloggedInUser(response.data.user[0]);
+        //getLocation();
       }
     });
   }, []);
 
-  
+  useEffect(() => {
+    setVisitRegistered(false);
+  }, [selectedPOI]);
 
-  let handleClick = (poi) => {
-    setcurrentPOI(poi);
+  //Register Visit function - takes in Location object makes POST request to backend for visit registration
+  const registerVisit = (location) => {
+    setVisitRegistered(true);
+    Axios.post("http://192.168.2.2:3001/visit", {
+      user: loggedInUser.id,
+      location: location.id,
+    }).then((response) => {
+      console.log(response.data);
+    });
   };
+
+  const registerBusyness = (poi) => {};
+
+  function handleHereClick(poi) {
+    registerVisit(poi);
+    //Taking the location info straight from the poi object to avoid async problems - setCurrentPOI() is async
+    setcurrentPOI(poi);
+  }
+  function handleSubmitClick(poi) {
+    registerBusyness(poi);
+    setcurrentPOI(poi);
+  }
 
   function findDistance(poi) {
     let x1 = state.lat;
@@ -129,8 +154,20 @@ const CovidMap = ({ selectedPOI,selectedType }) => {
   }
   //getsLocation - async - waits until user confirms
   function getLocation() {
+    console.log("1check");
+    navigator.geolocation.getCurrentPosition((position) => {
+      console.log(position.coords.latitude);
+      setState({
+        lat: position.coords.latitude,
+        lng: position.coords.longitude,
+      });
+    });
+  }
+
+  /*function getLocation() {
     navigator.geolocation.getCurrentPosition((position) => {
       setState((prevState) => {
+        console.log("check");
         return {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
@@ -138,7 +175,25 @@ const CovidMap = ({ selectedPOI,selectedType }) => {
       });
     });
   }
+*/
+
+  //measures distance from current Location to POI and checks if it is shorter than 20m -if so returns true - We need it when we check wether to show the "I am here"(Register Visit) Icon in PopUp
+  function isNearEnough(poi) {
+    let x1 = state.lat;
+    let y1 = state.lng;
+    let x2 = poi.coordinates.lat;
+    let y2 = poi.coordinates.lng;
+    let distance = Math.hypot(x2 - x1, y2 - y1) * 100000;
+    console.log(distance);
+    if (distance <= 50) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   let position = [state.lat, state.lng];
+
   return (
     <MapContainerDiv>
       <Map
@@ -153,66 +208,114 @@ const CovidMap = ({ selectedPOI,selectedType }) => {
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-      <Marker position={position} icon={currentLocationIcon}>
-          <Popup>Current Location</Popup>
-        </Marker>
-        {selectedPOI.name &&  <Marker
+        <Marker position={position} icon={currentLocationIcon}></Marker>
+        {selectedPOI.name && (
+          <Marker
             key={selectedPOI.id}
             position={[
               selectedPOI.coordinates.lat,
-              selectedPOI.coordinates.lng
+              selectedPOI.coordinates.lng,
             ]}
             icon={determineIcon(getPopularity(selectedPOI, 0))}
           >
             <Popup>
               <PopUpContainer>
                 <TitleText>{selectedPOI.name}</TitleText>
-                <h4>Popularity</h4>
-                <Popularity>
-                  <TimeDiv>
-                    <h4>{getTime(0)}:00</h4>
-                  </TimeDiv>
-                  <PopDiv>
-                    <img src={getPopularityGraph(getPopularity(selectedPOI, 0))} alt="text"></img>
-                  </PopDiv>
-                </Popularity>
-                <Popularity>
-                  <TimeDiv>
-                    <h4>{getTime(1)}:00</h4>
-                  </TimeDiv>
-                  <PopDiv>
-                    <img src={getPopularityGraph(getPopularity(selectedPOI, 1))} alt="text"></img>
-                  </PopDiv>
-                </Popularity>
-                <Popularity>
-                  <TimeDiv>
-                    <h4>{getTime(2)}:00</h4>
-                  </TimeDiv>
-                  <PopDiv>
-                    <img src={getPopularityGraph(getPopularity(selectedPOI, 2))} alt="text"></img>
-                  </PopDiv>
-                </Popularity>
-                <LiveDiv>
-                  <Live>
-                    <LiveText>LIVE</LiveText>
-                  </Live>
-                  <h5>A little busy</h5>
-                </LiveDiv>
-                <HereButton onClick={(e) => handleClick(selectedPOI)}>I am here!</HereButton>
+
+                {!visitRegistered && <h4>Popularity</h4>}
+
+                {!visitRegistered && (
+                  <Popularity>
+                    <TimeDiv>
+                      <h4>{getTime(0)}:00</h4>
+                    </TimeDiv>
+                    <PopDiv>
+                      <img
+                        src={getPopularityGraph(getPopularity(selectedPOI, 0))}
+                        alt="text"
+                      ></img>
+                    </PopDiv>
+                  </Popularity>
+                )}
+                {!visitRegistered && (
+                  <Popularity>
+                    <TimeDiv>
+                      <h4>{getTime(1)}:00</h4>
+                    </TimeDiv>
+                    <PopDiv>
+                      <img
+                        src={getPopularityGraph(getPopularity(selectedPOI, 1))}
+                        alt="text"
+                      ></img>
+                    </PopDiv>
+                  </Popularity>
+                )}
+                {!visitRegistered && (
+                  <Popularity>
+                    <TimeDiv>
+                      <h4>{getTime(2)}:00</h4>
+                    </TimeDiv>
+                    <PopDiv>
+                      <img
+                        src={getPopularityGraph(getPopularity(selectedPOI, 2))}
+                        alt="text"
+                      ></img>
+                    </PopDiv>
+                  </Popularity>
+                )}
+                {!visitRegistered && (
+                  <LiveDiv>
+                    <Live>
+                      <LiveText>LIVE</LiveText>
+                    </Live>
+                    <h5>A little busy</h5>
+                  </LiveDiv>
+                )}
+                {isNearEnough(selectedPOI) && !visitRegistered && (
+                  <HereButton onClick={(e) => handleHereClick(selectedPOI)}>
+                    I am here!
+                  </HereButton>
+                )}
+                {visitRegistered && (
+                  <Estimate>
+                    <h4>How busy is it currenty?</h4>
+                    <DropdownList
+                      defaultValue="Not busy"
+                      data={[
+                        "Not busy",
+                        "Not too busy",
+                        "A little busy",
+                        "As busy as it gets",
+                      ]}
+                    />
+                    <HereButton onClick={(e) => handleSubmitClick(selectedPOI)}>
+                      Submit
+                    </HereButton>
+                  </Estimate>
+                )}
               </PopUpContainer>
             </Popup>
-          </Marker> }
-          
-        
-
-        
+          </Marker>
+        )}
       </Map>
-      
+
       <h1>{currentPOI.name && currentPOI.name}</h1>
     </MapContainerDiv>
   );
 };
 export default CovidMap;
+
+const Estimate = styled.div`
+  margin-top: 1em;
+  height: auto;
+  width: 100%;
+  border: none;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+`;
 
 const PopUpContainer = styled.div`
   margin-left: -5px;
@@ -289,6 +392,7 @@ const Live = styled.div`
 `;
 
 const HereButton = styled.button`
+  margin-top: 0.5em;
   height: 3em;
   width: 100%;
   border: none;

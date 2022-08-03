@@ -4,126 +4,139 @@ import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import styled from "styled-components";
 
-const networkAdress = "http://192.168.2.10:";
+const networkAdress = "http://192.168.2.2:";
 
- export const Login = () => {
-    const [username, setUsername] = useState();
-    const [password, setPassword] = useState();
-    const [loginStatus, setloginStatus] = useState();
-    
-    Axios.defaults.withCredentials = true;
-    
-   
+export const Login = () => {
+  const [username, setUsername] = useState();
+  const [password, setPassword] = useState();
+  const [loginStatus, setloginStatus] = useState();
 
-    let navigate = useNavigate();
+  Axios.defaults.withCredentials = true;
 
+  let navigate = useNavigate();
 
-    const loginUser = () =>{
-        Axios.post('http://192.168.2.10:3001/login', {
-            username: username,
-            password: password
-        }).then((response)=>{
-            console.log(response.data);
-            if(response.data.message){
-                setloginStatus(response.data.message);                
-            }else{
-                setloginStatus(response.data[0].username);
-                navigate("/map");
-            }
-            
-    })}        
+  const loginUser = () => {
+    Axios.post("http://192.168.2.2:3001/login", {
+      username: username,
+      password: password,
+    }).then((response) => {
+      console.log(response.data);
+      if (response.data.message) {
+        setloginStatus(response.data.message);
+      } else {
+        setloginStatus(response.data[0].username);
+        navigate("/map");
+      }
+    });
+  };
 
-    useEffect(() => {
-        Axios.get('http://192.168.2.10:3001/login').then((response)=>{
-            if(response.data.loggedIn === true) {
-                setloginStatus(response.data.user[0].username);
-                navigate("/map");
-            }
-        });
-    },)
+  useEffect(() => {
+    Axios.get("http://192.168.2.2:3001/login").then((response) => {
+      if (response.data.loggedIn === true) {
+        setloginStatus(response.data.user[0].username);
+        navigate("/map");
+      }
+    });
+  });
 
-    return (
-      <LoginWrapper>
-        <HeadWrapper>
-          <Head>LOGIN</Head>
-          <SmallHead>Please sign in to continue</SmallHead>
-        </HeadWrapper>
-        <Form>
-          <StyledInput type="email" placeholder="Username" onChange={(event) => {
-              setUsername(event.target.value);
-            }}
-          />
-          <StyledInput type="password" placeholder="Password" onChange={(event) => {
-              setPassword(event.target.value);
-            }}
-          />
-          <Button onClick={loginUser}>LOGIN</Button>
-          {loginStatus && <ErrorSign errorText={loginStatus}></ErrorSign>}
-          <SmallHead>Not yet a member? <a href="/Register">Register</a>
-          <button onClick={()=>{
+  return (
+    <LoginWrapper>
+      <HeadWrapper>
+        <Head>LOGIN</Head>
+        <SmallHead>Please sign in to continue</SmallHead>
+      </HeadWrapper>
+      <Form>
+        <StyledInput
+          type="email"
+          placeholder="Username"
+          onChange={(event) => {
+            setUsername(event.target.value);
+          }}
+        />
+        <StyledInput
+          type="password"
+          placeholder="Password"
+          onChange={(event) => {
+            setPassword(event.target.value);
+          }}
+        />
+        <Button onClick={loginUser}>LOGIN</Button>
+        {loginStatus && <ErrorSign errorText={loginStatus}></ErrorSign>}
+        <SmallHead>
+          Not yet a member? <a href="/Register">Register</a>
+          <button
+            onClick={() => {
               navigate("/map");
-          }}></button>       
+            }}
+          ></button>
         </SmallHead>
-        </Form>
-           
-        
-      </LoginWrapper>
-    );
+      </Form>
+    </LoginWrapper>
+  );
 };
 
 export const Register = () => {
-    const [username, setUsername] = useState();
-    const [password1, setPassword1] = useState();
-    const [password2, setPassword2] = useState();
-    const [registrationError, setregistrationError] = useState();
+  const [username, setUsername] = useState();
+  const [password1, setPassword1] = useState();
+  const [password2, setPassword2] = useState();
+  const [registrationError, setregistrationError] = useState();
 
-    const passwordsDontMatch = () =>  {
-        console.log("PASSWORDS DONT MATCH")
-        setregistrationError('PASSWORDS DONT MATCH')
+  const passwordsDontMatch = () => {
+    console.log("PASSWORDS DONT MATCH");
+    setregistrationError("PASSWORDS DONT MATCH");
+  };
+
+  const registerUser = () => {
+    if (password1 === password2) {
+      Axios.post("http://192.168.2.2:3001/register", {
+        username: username,
+        password: password1,
+      }).then(() => {
+        console.log("SUCCESS");
+      });
+    } else {
+      passwordsDontMatch();
     }
+  };
 
-    const registerUser = () =>{
-
-        if(password1===password2){
-                Axios.post('http://192.168.2.10:3001/register', {
-                username: username,
-                password: password1
-            }).then(()=>{
-                console.log("SUCCESS");
-                
-            })
-        }else{
-            passwordsDontMatch();
-        }        
-    }
-
-    return (
-        <RegisterWrapper>
-            <HeadWrapper>
-            <Head>Register</Head>
-            <SmallHead>Please register to continue</SmallHead>
-            </HeadWrapper>
-            <Form>
-            
-            <StyledInput type="email" placeholder='Username' onChange={(event) => {
-              setUsername(event.target.value);
-            }}
-          />
-            <StyledInput type="password" placeholder="Password" onChange={(event) => {
-              setPassword1(event.target.value);
-            }}
-          />
-            <StyledInput type="password" placeholder="Password" onChange={(event) => {
-              setPassword2(event.target.value);
-            }}
-          />
-            <Button onClick={registerUser}>Register</Button>
-            {registrationError && <ErrorSign errorText='PASSWORDS DONT MATCH'></ErrorSign>}
-            </Form>            
-            <SmallHead>Already a member? <a href="/">Sign in</a></SmallHead>
-            
-        </RegisterWrapper>
-    );
+  return (
+    <RegisterWrapper>
+      <HeadWrapper>
+        <Head>Register</Head>
+        <SmallHead>Please register to continue</SmallHead>
+      </HeadWrapper>
+      <Form>
+        <StyledInput
+          type="email"
+          placeholder="Username"
+          onChange={(event) => {
+            setUsername(event.target.value);
+          }}
+        />
+        <StyledInput
+          type="password"
+          placeholder="Password"
+          onChange={(event) => {
+            setPassword1(event.target.value);
+          }}
+        />
+        <StyledInput
+          type="password"
+          placeholder="Password"
+          onChange={(event) => {
+            setPassword2(event.target.value);
+          }}
+        />
+        <Button onClick={registerUser}>Register</Button>
+        {registrationError && (
+          <ErrorSign errorText="PASSWORDS DONT MATCH"></ErrorSign>
+        )}
+      </Form>
+      <SmallHead>
+        Already a member? <a href="/">Sign in</a>
+      </SmallHead>
+    </RegisterWrapper>
+  );
 };
 
 
