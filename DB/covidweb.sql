@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 30, 2022 at 04:42 PM
--- Server version: 8.0.22
+-- Generation Time: Aug 04, 2022 at 11:05 AM
+-- Server version: 8.0.30
 -- PHP Version: 7.4.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
@@ -20,6 +20,17 @@ SET time_zone = "+00:00";
 --
 -- Database: `covidweb`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `busyness`
+--
+
+CREATE TABLE `busyness` (
+  `LOCATION_ID` varchar(256) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci NOT NULL,
+  `BUSYNESS` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -88,8 +99,28 @@ CREATE TABLE `visits` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 --
+-- Dumping data for table `visits`
+--
+
+INSERT INTO `visits` (`USER_ID`, `LOCATION_ID`, `TIMESTAMP`) VALUES
+(17, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-08-04 08:07:11'),
+(17, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-08-04 08:18:54'),
+(17, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-08-04 08:19:44'),
+(17, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-08-04 08:20:53'),
+(17, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-08-04 08:43:57'),
+(17, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-08-04 08:47:43'),
+(17, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-08-04 08:54:39');
+
+--
 -- Indexes for dumped tables
 --
+
+--
+-- Indexes for table `busyness`
+--
+ALTER TABLE `busyness`
+  ADD PRIMARY KEY (`LOCATION_ID`),
+  ADD UNIQUE KEY `LOCATION_ID` (`LOCATION_ID`);
 
 --
 -- Indexes for table `locations`
