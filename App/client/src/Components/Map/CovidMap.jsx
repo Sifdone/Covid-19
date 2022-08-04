@@ -41,6 +41,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   const [loggedInUser, setloggedInUser] = useState();
   const [currentPOI, setcurrentPOI] = useState({});
   const [visitRegistered, setVisitRegistered] = useState(false);
+  const [busynessDropdown, setBusynessDropdown] = useState(false);
   Axios.defaults.withCredentials = true;
 
   //Checks if a user is logged in upon loading |
@@ -71,16 +72,42 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
     });
   };
 
-  const registerBusyness = (poi) => {};
+  const registerBusyness = (busyness) => {
+    Axios.post("http://192.168.2.2:3001/busy", {
+      location: currentPOI.id,
+      busyness: busyness,
+    }).then((response) => {
+      console.log(response.data);
+    });
+  };
 
   function handleHereClick(poi) {
     registerVisit(poi);
     //Taking the location info straight from the poi object to avoid async problems - setCurrentPOI() is async
     setcurrentPOI(poi);
   }
-  function handleSubmitClick(poi) {
-    registerBusyness(poi);
-    setcurrentPOI(poi);
+  function handleSubmitClick(busyness) {
+    console.log("CheckSubmit");
+    switch (busyness) {
+      case "Not busy":
+        busyness = 1;
+        break;
+      case "Not too busy":
+        busyness = 2;
+        break;
+      case "A little Busy":
+        busyness = 3;
+        break;
+      case "Very busy":
+        busyness = 4;
+        break;
+      case "As busy as it gets":
+        busyness = 5;
+        break;
+      default:
+        console.log("test");
+    }
+    registerBusyness(busyness);
   }
 
   function findDistance(poi) {
@@ -281,14 +308,18 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
                     <h4>How busy is it currenty?</h4>
                     <DropdownList
                       defaultValue="Not busy"
+                      onChange={(nextValue) => setBusynessDropdown(nextValue)}
                       data={[
                         "Not busy",
                         "Not too busy",
                         "A little busy",
+                        "Very busy",
                         "As busy as it gets",
                       ]}
                     />
-                    <HereButton onClick={(e) => handleSubmitClick(selectedPOI)}>
+                    <HereButton
+                      onClick={(e) => handleSubmitClick(busynessDropdown)}
+                    >
                       Submit
                     </HereButton>
                   </Estimate>

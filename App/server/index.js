@@ -115,7 +115,6 @@ app.post("/register", (req, res) => {
 app.post("/visit", (req, res) => {
   const userId = req.body.user;
   const locationId = req.body.location;
-
   db.query(
     "INSERT INTO visits (USER_ID,LOCATION_ID) VALUES (?,?)",
     [userId, locationId],
@@ -124,6 +123,23 @@ app.post("/visit", (req, res) => {
         console.log(err);
       } else {
         res.send("Visit Registered");
+      }
+    }
+  );
+});
+
+//Register Busyness API
+app.post("/busy", (req, res) => {
+  const busyness = req.body.busyness;
+  const locationId = req.body.location;
+  db.query(
+    "INSERT INTO busyness (LOCATION_ID,BUSYNESS) VALUES (?,?)",
+    [locationId, busyness],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Busyness Registered");
       }
     }
   );
