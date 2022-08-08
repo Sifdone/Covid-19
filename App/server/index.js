@@ -153,6 +153,12 @@ app.listen(3001, () => {
     console.log("Server running in port 3001")
     //storeJSON();
 })
+//Get busyness from time (120min)
+app.get("/busy", (req, res) =>{
+  db.query("SELECT  AVG(busyness)  FROM   busyness WHERE timestamp >= NOW() - INTERVAL 2 DAY")
+  
+})
+
 /*
 function storeJSON() {
     testData.forEach((poi) => {
