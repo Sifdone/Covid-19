@@ -159,6 +159,21 @@ app.get("/busy", (req, res) =>{
   
 })
 
+app.post("/covid", (req, res) => {
+  const userId = req.body.user;
+  // const details = req.body.details
+  db.query("UPDATE covid SET hascovid = IF(DATEDIFF(DAY,NOW(),timestamp)>=14,TRUE,FALSE) WHERE userId = (?)",
+  [userId],
+  (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send("Covid Case Registered");
+    }
+  }
+  
+  );})
+//
 /*
 function storeJSON() {
     testData.forEach((poi) => {
