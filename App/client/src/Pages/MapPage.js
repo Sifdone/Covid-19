@@ -10,11 +10,14 @@ import TestData from '../data/starting_pois_test3.json'
 export const MapPage = () => {
     const [loggedInUser, setloggedInUser] = useState();
     const [selectedPOI,setselectedPOI] = useState({});
-    const [selectedType,setselectedType] =useState({});
+//    const [selectedType,setselectedType] =useState({});
+// eslint-disable-next-line
+    const [selectedLocation,setselectedLocation] =useState({});
     
     let navigate = useNavigate();
     
     Axios.defaults.withCredentials = true;
+
 
     useEffect(() => {
         Axios.get("http://192.168.2.2:3001/login").then((response) => {
@@ -77,7 +80,7 @@ const HeaderTextLogout = styled.a`
     @media only screen and (max-width: 500px) {
     } 
 `
-
+// eslint-disable-next-line
 const SearchInput = styled.input`
     
     width: 100%;

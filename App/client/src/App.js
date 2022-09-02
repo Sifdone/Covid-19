@@ -2,7 +2,7 @@ import {Login, Register} from "./Components/Login";
 //import CovidMap from "./Components/CovidMap.jsx"
 import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
-import {LoginPage} from './Pages/LoginPage'
+//import {LoginPage} from './Pages/LoginPage'
 import {MapPage} from './Pages/MapPage'
 import styled from "styled-components";
 

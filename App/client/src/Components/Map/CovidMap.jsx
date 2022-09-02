@@ -1,47 +1,26 @@
-import L from "leaflet";
+//import L from "leaflet";
 import Axios from "axios";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { Pop } from "../PopUp";
 import { useState, useEffect } from "react";
 import ChangeMapView from "./ChangeMapView";
-import testData from "../../data/starting_pois_test2.json";
+import NumberInput from "../NumberInput";
+//import testData from "../../data/starting_pois_test2.json";
 import styled from "styled-components";
-import DropdownList from "react-widgets/DropdownList";
-import "react-widgets/styles.css";
-
-// Icons
-let currentLocationIcon = L.icon({
-  iconUrl: require("../icons/currentLocationMarker.png"),
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -41],
-});
-
-let greenPOIIcon = L.icon({
-  iconUrl: require("../icons/greenPOIIcon.png"),
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -20],
-});
-let orangePOIIcon = L.icon({
-  iconUrl: require("../icons/orangePOIIcon.png"),
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -20],
-});
-let redPOIIcon = L.icon({
-  iconUrl: require("../icons/redPOIIcon.png"),
-  iconSize: [30, 30],
-  iconAnchor: [15, 15],
-  popupAnchor: [0, -20],
-});
+import {
+  currentLocationIcon,
+  greenPOIIcon,
+  orangePOIIcon,
+  redPOIIcon,
+} from "../icons/Icons";
 
 const CovidMap = ({ selectedPOI, selectedType }) => {
   const [state, setState] = useState({ lat: 38.26473, lng: 21.745822 }); //georgiou: { lat: 38.245987, lng: 21.735366 } //near zacherino: {lat: 38.264730, lng: 21.745822}    test: lat: 38.265524, lng: 21.749094 }
   const [loggedInUser, setloggedInUser] = useState();
   const [currentPOI, setcurrentPOI] = useState({});
+  const [registerAttempt, setRegisterAttempt] = useState(false);
+  // eslint-disable-next-line
   const [visitRegistered, setVisitRegistered] = useState(false);
-  const [busynessDropdown, setBusynessDropdown] = useState(false);
+  const [busynessValue, setBusynessValue] = useState(0);
   Axios.defaults.withCredentials = true;
 
   //Checks if a user is logged in upon loading |
@@ -58,7 +37,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   }, []);
 
   useEffect(() => {
-    setVisitRegistered(false);
+    setRegisterAttempt(false);
   }, [selectedPOI]);
 
   //Register Visit function - takes in Location object makes POST request to backend for visit registration
@@ -72,44 +51,23 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
     });
   };
 
-  const registerBusyness = (busyness) => {
+  function handleHereClick(poi) {
+    setRegisterAttempt(true);
+    //Taking the location info straight from the poi object to avoid async problems - setCurrentPOI() is async
+    setcurrentPOI(poi);
+  }
+
+  //registerBusyness after click on submit
+  function handleSubmitClick(busyness, poi) {
+    registerVisit(poi);
     Axios.post("http://192.168.2.2:3001/busy", {
       location: currentPOI.id,
       busyness: busyness,
     }).then((response) => {
       console.log(response.data);
     });
-  };
-
-  function handleHereClick(poi) {
-    registerVisit(poi);
-    //Taking the location info straight from the poi object to avoid async problems - setCurrentPOI() is async
-    setcurrentPOI(poi);
   }
-  function handleSubmitClick(busyness) {
-    console.log("CheckSubmit");
-    switch (busyness) {
-      case "Not busy":
-        busyness = 1;
-        break;
-      case "Not too busy":
-        busyness = 2;
-        break;
-      case "A little Busy":
-        busyness = 3;
-        break;
-      case "Very busy":
-        busyness = 4;
-        break;
-      case "As busy as it gets":
-        busyness = 5;
-        break;
-      default:
-        console.log("test");
-    }
-    registerBusyness(busyness);
-  }
-
+  // eslint-disable-next-line
   function findDistance(poi) {
     let x1 = state.lat;
     let y1 = state.lng;
@@ -174,12 +132,13 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   //takes in popularity and returns corresponding icon
   function determineIcon(popularity) {
     if (popularity < 33) {
-      return greenPOIIcon;
+      return greenPOIIcon();
     } else if (popularity < 65) {
-      return orangePOIIcon;
-    } else return redPOIIcon;
+      return orangePOIIcon();
+    } else return redPOIIcon();
   }
   //getsLocation - async - waits until user confirms
+  // eslint-disable-next-line
   function getLocation() {
     console.log("1check");
     navigator.geolocation.getCurrentPosition((position) => {
@@ -235,7 +194,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-        <Marker position={position} icon={currentLocationIcon}></Marker>
+        <Marker position={position} icon={currentLocationIcon()}></Marker>
         {selectedPOI.name && (
           <Marker
             key={selectedPOI.id}
@@ -249,9 +208,9 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
               <PopUpContainer>
                 <TitleText>{selectedPOI.name}</TitleText>
 
-                {!visitRegistered && <h4>Popularity</h4>}
+                {!registerAttempt && <h4>Popularity</h4>}
 
-                {!visitRegistered && (
+                {!registerAttempt && (
                   <Popularity>
                     <TimeDiv>
                       <h4>{getTime(0)}:00</h4>
@@ -264,7 +223,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
                     </PopDiv>
                   </Popularity>
                 )}
-                {!visitRegistered && (
+                {!registerAttempt && (
                   <Popularity>
                     <TimeDiv>
                       <h4>{getTime(1)}:00</h4>
@@ -277,7 +236,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
                     </PopDiv>
                   </Popularity>
                 )}
-                {!visitRegistered && (
+                {!registerAttempt && (
                   <Popularity>
                     <TimeDiv>
                       <h4>{getTime(2)}:00</h4>
@@ -290,7 +249,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
                     </PopDiv>
                   </Popularity>
                 )}
-                {!visitRegistered && (
+                {!registerAttempt && (
                   <LiveDiv>
                     <Live>
                       <LiveText>LIVE</LiveText>
@@ -298,30 +257,29 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
                     <h5>A little busy</h5>
                   </LiveDiv>
                 )}
-                {isNearEnough(selectedPOI) && !visitRegistered && (
+                {isNearEnough(selectedPOI) && !registerAttempt && (
                   <HereButton onClick={(e) => handleHereClick(selectedPOI)}>
                     I am here!
                   </HereButton>
                 )}
-                {visitRegistered && (
+                {registerAttempt && (
                   <Estimate>
-                    <h4>How busy is it currenty?</h4>
-                    <DropdownList
-                      defaultValue="Not busy"
-                      onChange={(nextValue) => setBusynessDropdown(nextValue)}
-                      data={[
-                        "Not busy",
-                        "Not too busy",
-                        "A little busy",
-                        "Very busy",
-                        "As busy as it gets",
-                      ]}
-                    />
+                    <h4>How many people are approximately on location?</h4>
+                    <NumberInput setBusyness={setBusynessValue}></NumberInput>
+
                     <HereButton
-                      onClick={(e) => handleSubmitClick(busynessDropdown)}
+                      onClick={(e) =>
+                        handleSubmitClick(busynessValue, selectedPOI)
+                      }
                     >
                       Submit
                     </HereButton>
+                    <Confirm>
+                      <h6>
+                        By clicking submit you agree to your current visit being
+                        recorded
+                      </h6>
+                    </Confirm>
                   </Estimate>
                 )}
               </PopUpContainer>
@@ -337,9 +295,22 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
 export default CovidMap;
 
 const Estimate = styled.div`
+  text-align: center;
   margin-top: 1em;
   height: auto;
   width: 100%;
+  border: none;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: black;
+`;
+
+const Confirm = styled.div`
+  margin-top: 1em;
+  height: auto;
+  width: 80%;
   border: none;
   flex-direction: column;
   display: flex;
@@ -451,16 +422,13 @@ const Map = styled(MapContainer)`
 `;
 
 const MapContainerDiv = styled.div`
-  z-index: -1; 
+  z-index: -1;
   height: auto;
   width: 100vw;
   flex-direction: column;
   display: flex;
   align-items: center;
 `;
-
-
-
 
 /*
 display pois from json to map

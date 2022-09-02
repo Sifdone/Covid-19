@@ -9,7 +9,7 @@ const session = require('express-session');
 const testData = require('./data/testData.json');
 
 
-const networkAdress = "http://192.168.2.2:3000";
+const networkAdress = "http://192.168.2.7:3000";
 const saltRounds = 10; //Hashing
 
 app.use(express.json());
