@@ -1,7 +1,7 @@
 import styled from "styled-components";
 //import {useState} from 'react';
 
-const NumberInput = (setBusyness) => {
+const NumberInput = ({ setBusyness }) => {
   const handleChange = (event) => {
     const value = event.target.value;
     console.log(value);
