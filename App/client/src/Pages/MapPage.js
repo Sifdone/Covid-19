@@ -6,45 +6,50 @@ import Axios from 'axios';
 import SearchBar from "../Components/SearchBar";
 import TestData from '../data/starting_pois_test3.json'
 
+const ip = "http://192.168.2.7:3001/";
 
 export const MapPage = () => {
-    const [loggedInUser, setloggedInUser] = useState();
-    const [selectedPOI,setselectedPOI] = useState({});
-//    const [selectedType,setselectedType] =useState({});
-// eslint-disable-next-line
-    const [selectedLocation,setselectedLocation] =useState({});
-    
-    let navigate = useNavigate();
-    
-    Axios.defaults.withCredentials = true;
+  const [loggedInUser, setloggedInUser] = useState();
+  const [selectedPOI, setselectedPOI] = useState({});
+  //    const [selectedType,setselectedType] =useState({});
+  // eslint-disable-next-line
+  const [selectedLocation, setselectedLocation] = useState({});
 
+  let navigate = useNavigate();
 
-    useEffect(() => {
-        Axios.get("http://192.168.2.2:3001/login").then((response) => {
-          if (response.data.loggedIn === true) {
-            console.log(response.data.loggedIn);
-            console.log("logged in");
-            setloggedInUser(response.data.user[0].username);
-          } else {
-            console.log("not logged in");
-            navigate("/");
-          }
-        });
-    }, [navigate])
+  Axios.defaults.withCredentials = true;
 
-    return (
-        <MapPageContainer>
+  useEffect(() => {
+    Axios.get(ip.concat("login")).then((response) => {
+      if (response.data.loggedIn === true) {
+        console.log(response.data.loggedIn);
+        console.log("logged in");
+        setloggedInUser(response.data.user[0].username);
+      } else {
+        console.log("not logged in");
+        navigate("/");
+      }
+    });
+  }, [navigate]);
 
-            <HeadBar>
-                <HeaderTextUser>{loggedInUser} | </HeaderTextUser>
-                <HeaderTextLogout href="./" >Logout</HeaderTextLogout>
-            </HeadBar>
-            <SearchBar placeholder="Search" data={TestData} setselectedPOI={setselectedPOI}></SearchBar>
-                
-            <CovidMap selectedPOI = {selectedPOI}/>
-        </MapPageContainer>
-    )
-}
+  return (
+    <MapPageContainer>
+      <HeadBar>
+        <HeaderTextUser>{loggedInUser} | </HeaderTextUser>
+        <HeaderTextLogout href="./">Logout</HeaderTextLogout>
+        <HeaderTextUser> | </HeaderTextUser>
+        <HeaderTextLogout href="./settings">Settings</HeaderTextLogout>
+      </HeadBar>
+      <SearchBar
+        placeholder="Search"
+        data={TestData}
+        setselectedPOI={setselectedPOI}
+      ></SearchBar>
+
+      <CovidMap selectedPOI={selectedPOI} />
+    </MapPageContainer>
+  );
+};
 
 
 const HeadBar = styled.div`

@@ -13,6 +13,9 @@ import {
   redPOIIcon,
 } from "../icons/Icons";
 
+
+const ip = "http://192.168.2.7:3001/";
+
 const CovidMap = ({ selectedPOI, selectedType }) => {
   const [state, setState] = useState({ lat: 38.26473, lng: 21.745822 }); //georgiou: { lat: 38.245987, lng: 21.735366 } //near zacherino: {lat: 38.264730, lng: 21.745822}    test: lat: 38.265524, lng: 21.749094 }
   const [loggedInUser, setloggedInUser] = useState();
@@ -28,10 +31,13 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   //Gets location after login check | maybe check anyways?
   //We will need to check for disctance to all objects in database - performance? | keep in mind getLocation is asynchr - needs to be finished to compare
   useEffect(() => {
-    Axios.get("http://192.168.2.2:3001/login").then((response) => {
+    Axios.get(ip.concat("login")).then((response) => {
       if (response.data.loggedIn === true) {
         setloggedInUser(response.data.user[0]);
+        console.log(response.data.user[0]);
         //getLocation();
+      } else {
+        console.log("check");
       }
     });
   }, []);
@@ -42,8 +48,9 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
 
   //Register Visit function - takes in Location object makes POST request to backend for visit registration
   const registerVisit = (location) => {
+    console.log(loggedInUser);
     setVisitRegistered(true);
-    Axios.post("http://192.168.2.2:3001/visit", {
+    Axios.post(ip.concat("visit"), {
       user: loggedInUser.id,
       location: location.id,
     }).then((response) => {
@@ -60,8 +67,8 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   //registerBusyness after click on submit
   function handleSubmitClick(busyness, poi) {
     registerVisit(poi);
-    Axios.post("http://192.168.2.2:3001/busy", {
-      location: currentPOI.id,
+    Axios.post(ip.concat("busy"), {
+      location: poi.id,
       busyness: busyness,
     }).then((response) => {
       console.log(response.data);

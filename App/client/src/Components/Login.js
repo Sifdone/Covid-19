@@ -6,6 +6,8 @@ import styled from "styled-components";
 
 //const networkAdress = "http://192.168.2.2:";
 
+const ip = "http://192.168.2.7:3001/";
+
 export const Login = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
@@ -16,7 +18,7 @@ export const Login = () => {
   let navigate = useNavigate();
 
   const loginUser = () => {
-    Axios.post("http://192.168.2.7:3001/login", {
+    Axios.post(ip.concat("login"), {
       username: username,
       password: password,
     }).then((response) => {
@@ -31,7 +33,7 @@ export const Login = () => {
   };
 
   useEffect(() => {
-    Axios.get("http://192.168.2.7:3001/login").then((response) => {
+    Axios.get(ip.concat("login")).then((response) => {
       if (response.data.loggedIn === true) {
         setloginStatus(response.data.user[0].username);
         navigate("/map");
@@ -88,7 +90,7 @@ export const Register = () => {
 
   const registerUser = () => {
     if (password1 === password2) {
-      Axios.post("http://192.168.2.7:3001/register", {
+      Axios.post(ip.concat("register"), {
         username: username,
         password: password1,
       }).then(() => {

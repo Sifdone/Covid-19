@@ -3,21 +3,22 @@ import {Login, Register} from "./Components/Login";
 import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
 //import {LoginPage} from './Pages/LoginPage'
-import {MapPage} from './Pages/MapPage'
+import { MapPage } from "./Pages/MapPage";
+import { SettingsPage } from "./Pages/SettingsPage";
 import styled from "styled-components";
 
 function App() {
   return (
     <BrowserRouter>
       <AppDiv>
-      <Routes>       
-      <Route path="/" element={<Login></Login>}/>
-      <Route path="/Map" element={<MapPage></MapPage>}/>
-      <Route path="/Register" element={<Register/>}/>
-      </Routes>
-      </AppDiv> 
+        <Routes>
+          <Route path="/" element={<Login></Login>} />
+          <Route path="/Map" element={<MapPage></MapPage>} />
+          <Route path="/Register" element={<Register />} />
+          <Route path="/Settings" element={<SettingsPage />} />
+        </Routes>
+      </AppDiv>
     </BrowserRouter>
-
   );
 }
 
