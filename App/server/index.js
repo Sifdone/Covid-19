@@ -175,9 +175,10 @@ app.get("/busys", (req, res) => {
 
 app.post("/covid", (req, res) => {
   const userId = req.body.user;
-  // const details = req.body.details
-  db.query("UPDATE covid SET hascovid = IF(DATEDIFF(DAY,NOW(),timestamp)>=14,TRUE,FALSE) WHERE userId = (?)",
-  [userId],
+  const details = req.body.details;
+  //db.query("UPDATE covid SET hascovid = IF(DATEDIFF(DAY,NOW(),timestamp)>=14,TRUE,FALSE) WHERE userId = (?)",
+  db.query("INSERT INTO covid VALUES(?,TRUE,?,NOW())")
+  [userId,details],
   (err, result) => {
     if (err) {
       console.log(err);
@@ -186,7 +187,7 @@ app.post("/covid", (req, res) => {
     }
   }
   
-  );})
+});
 //
 /*
 function storeJSON() {
