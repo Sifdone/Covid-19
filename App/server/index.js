@@ -6,7 +6,7 @@ const bcrypt = require('bcrypt');
 const bodyParser = require('body-parser');
 const cookieParser = require('cookie-parser');
 const session = require('express-session');
-const testData = require('./data/testData.json');
+const testData = require('./data/locationData.json');
 
 
 const networkAdress = "http://192.168.2.7:3000";
@@ -145,16 +145,38 @@ app.post("/busy", (req, res) => {
   );
 });
 
-
+//Get History API
 app.post("/history", (req, res) => {
   const user_id = req.body.user_id;
   db.query(
-    "SELECT LOCATION_ID, TIMESTAMP, NAME, LATITUDE, LONGTITUDE FROM `visits` INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID WHERE USER_ID = ?",
+    "SELECT LOCATION_ID, TIMESTAMP, NAME FROM `visits` INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID WHERE USER_ID = ?",
     [user_id],
     (err, result) => {
       if (err) {
         console.log(err);
       } else {
+        res.send(result);
+      }
+    }
+  );
+});
+
+
+//Get POIS API
+app.get("/pois", (req, res) => {
+  db.query(
+    "SELECT id, name, types->\"$\" as types, coordinates->\"$\" as coordinates, populartimes->\"$\" as populartimes FROM `locations`",
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        result.forEach((row) => {
+          row.populartimes = JSON.parse(row.populartimes)
+          row.coordinates = JSON.parse(row.coordinates)
+          row.types = JSON.parse(row.types)
+
+
+        })
         console.log(result);
         res.send(result);
       }
@@ -162,8 +184,26 @@ app.post("/history", (req, res) => {
   );
 });
 
+
+function storeJSON() {
+  testData.forEach((poi) => {
+      
+      db.query('INSERT INTO locations (id,name,types,coordinates,populartimes) VALUES (?,?,?,?,?)',
+      [poi.id,poi.name,JSON.stringify(poi.types), JSON.stringify(poi.coordinates), JSON.stringify(poi.populartimes) ],
+      (err, result) => {
+          if(err){
+              console.log(err)
+          }
+      });
+  })
+}
+
+
+
+
 app.listen(3001, () => {
   console.log("Server running in port 3001");
+  //getPOIS();
   //storeJSON();
 });
 //Get busyness from time (120min)
@@ -189,18 +229,9 @@ app.post("/covid", (req, res) => {
   
 });
 //
-/*
-function storeJSON() {
-    testData.forEach((poi) => {
-        db.query('INSERT INTO locations (id,name,latitude,longtitude) VALUES (?,?,?,?)',
-        [poi.id,poi.name,poi.coordinates.lat,poi.coordinates.lng],
-        (err, result) => {
-            if(err){
-                console.log(err)
-            }
-        }); 
-    })
-}
-*/
+
+
+
+
 
 

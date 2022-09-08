@@ -4,7 +4,7 @@ import {useNavigate} from "react-router";
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import SearchBar from "../Components/SearchBar";
-import TestData from '../data/starting_pois_test3.json'
+//import TestData from '../data/starting_pois_test3.json'
 
 const ip = "http://192.168.2.7:3001/";
 
@@ -14,10 +14,17 @@ export const MapPage = () => {
   //    const [selectedType,setselectedType] =useState({});
   // eslint-disable-next-line
   const [selectedLocation, setselectedLocation] = useState({});
+  const [locationData,setlocationData] = useState({});
 
   let navigate = useNavigate();
 
   Axios.defaults.withCredentials = true;
+
+  const getPOIs = () => {
+    Axios.get(ip.concat("pois")).then((response) => {
+      setlocationData(response.data);
+    });
+  };
 
   useEffect(() => {
     Axios.get(ip.concat("login")).then((response) => {
@@ -25,6 +32,7 @@ export const MapPage = () => {
         console.log(response.data.loggedIn);
         console.log("logged in");
         setloggedInUser(response.data.user[0].username);
+        getPOIs();
       } else {
         console.log("not logged in");
         navigate("/");
@@ -42,7 +50,7 @@ export const MapPage = () => {
       </HeadBar>
       <SearchBar
         placeholder="Search"
-        data={TestData}
+        data={locationData}
         setselectedPOI={setselectedPOI}
       ></SearchBar>
 
