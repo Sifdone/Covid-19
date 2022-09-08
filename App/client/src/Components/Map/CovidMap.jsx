@@ -28,7 +28,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   //Gets location after login check | maybe check anyways?
   //We will need to check for disctance to all objects in database - performance? | keep in mind getLocation is asynchr - needs to be finished to compare
   useEffect(() => {
-    Axios.get("http://192.168.2.2:3001/login").then((response) => {
+    Axios.get("http://192.168.56.1:3001/login").then((response) => {
       if (response.data.loggedIn === true) {
         setloggedInUser(response.data.user[0]);
         //getLocation();
@@ -43,7 +43,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   //Register Visit function - takes in Location object makes POST request to backend for visit registration
   const registerVisit = (location) => {
     setVisitRegistered(true);
-    Axios.post("http://192.168.2.2:3001/visit", {
+    Axios.post("http://192.168.56.1:3001/visit", {
       user: loggedInUser.id,
       location: location.id,
     }).then((response) => {
@@ -60,7 +60,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
   //registerBusyness after click on submit
   function handleSubmitClick(busyness, poi) {
     registerVisit(poi);
-    Axios.post("http://192.168.2.2:3001/busy", {
+    Axios.post("http://192.168.56.1:3001/busy", {
       location: currentPOI.id,
       busyness: busyness,
     }).then((response) => {
