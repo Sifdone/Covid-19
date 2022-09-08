@@ -88,9 +88,6 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
       setFilterType([]);
     }
   };
-  useEffect(() => {
-    setTypes(getLocationTypes(data));
-  }, [data]);
 
   return (
     <Search>
