@@ -310,6 +310,31 @@ function storeJSON() {
   });
 }
 
+//επιστρεφει οσους ηταν σε ενα location στη συγκεκριμενη χρονικη περιοδο
+function getPossibleCases(locationId, Time){ //input location and time and find
+  let timeFrom = Time - 2; //Δεν ειναι σωστα βρες πως γινεται
+  let timeUntil = Time + 2;
+  db.query(
+    'SELECT DISTINCT USER_ID FROM `visits` WHERE TIMESTAMP BETWEEN ? and ?',
+    [timeFrom,timeUntil], //'2022-09-10 20:04:00','2022-09-10 20:18:56'
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        console.log(result);
+      }
+    }
+  );
+}
+
+//ενα fun που θα παιρνει ολα τα visits που εκανε τις τελευταιες 7 μερες αυτος που δηλωσε
+//και τρεξε για το καθε visit το get possible case, μαζεψε ολους του χρηστες και βαλτους σε ενα table possiblecases 
+//οταν συνδεεσαι θα ελεγχει αν ειναι σε αυτο το table
+
+
+
+
+
 app.listen(3001, () => {
   console.log("Server running in port 3001");
   //getPOIS();
