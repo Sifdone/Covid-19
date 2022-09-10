@@ -13,7 +13,37 @@ const connection = mysql.createConnection({
   database: "covidweb",
 });
 connection.connect();
-var someVar = [];
+
+function setValue(value) {
+  locationId = value[0].ID;
+  console.log(typeof locationId);
+}
+
+let locationId = "";
+
+function insertVisits() {
+  connection.query(
+    "INSERT INTO visits (USER_ID,LOCATION_ID) VALUES (?,?)",
+    [randomnumber, locationId],
+    (err) => {
+      if (err) {
+        throw err;
+      }
+      console.log(
+        "Seed successful! UserID: " +
+          randomnumber +
+          " LocationId: " +
+          locationId
+      );
+      connection.end();
+    }
+  );
+}
+
+maximum = 20;
+minimum = 1;
+var randomnumber =
+  Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
 
 connection.query(
   "SELECT ID FROM locations ORDER BY RAND() LIMIT 1",
@@ -22,25 +52,9 @@ connection.query(
       throw err;
     } else {
       setValue(rows);
+      insertVisits();
     }
   }
 );
 
-function setValue(value) {
-  someVar = value[0].ID;
-  console.log(someVar);
-}
-maximum = 20;
-minimum = 16;
-var randomnumber =
-  Math.floor(Math.random() * (maximum - minimum + 1)) + minimum;
-//run the query
-connection.query(seedQuery, [randomnumber, someVar.toString()], (err) => {
-  if (err) {
-    throw err;
-  }
-  console.log(
-    "Seed successful! UserID: " + randomnumber + " LocationId: " + someVar
-  );
-  connection.end();
-});
+

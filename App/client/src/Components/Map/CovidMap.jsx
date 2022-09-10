@@ -35,7 +35,7 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
       if (response.data.loggedIn === true) {
         setloggedInUser(response.data.user[0]);
         console.log(response.data.user[0]);
-        //getLocation();
+        getLocation();
       } else {
         console.log("check");
       }

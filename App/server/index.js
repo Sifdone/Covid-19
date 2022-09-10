@@ -9,7 +9,7 @@ const session = require('express-session');
 const testData = require('./data/locationData.json');
 
 
-const networkAdress = "http://192.168.56.1:3000";
+const networkAdress = "http://192.168.2.7:3000";
 const saltRounds = 10; //Hashing
 
 app.use(express.json());
@@ -31,7 +31,7 @@ app.use(
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 60000,
+      maxAge: 1200000,
     },
   })
 );
@@ -111,6 +111,114 @@ app.post("/register", (req, res) => {
   });
 });
 
+//Alter Password
+app.post("/changepass", (req, res) => {
+  const user_id = req.body.user_id;
+  const password = req.body.password;
+  const newPassword = req.body.newPassword;
+
+  db.query(
+    "SELECT * FROM users WHERE id= ?", //Each user has unique password
+    user_id,
+    (err, result) => {
+      if (err) {
+        res.send({ err: err });
+      } else {
+        bcrypt.compare(password, result[0].password, (error, response) => {
+          if (response) {
+            bcrypt.hash(newPassword, saltRounds, (err, hash) => {
+              if (err) {
+                console.log(err);
+              }
+              db.query(
+                "UPDATE users SET password = ? WHERE id = ?",
+                [hash, user_id],
+                (err, result) => {
+                  if (err) {
+                    console.log(err);
+                  } else {
+                    res.send("Password Changed Successfully");
+                  }
+                }
+              );
+            });
+
+            //req.session.user = result;
+            //console.log(req.session.user);
+            //res.send(result);
+          } else {
+            res.send({ message: "Wrong username/password combination" });
+          }
+        });
+      }
+    }
+  );
+});
+
+//Alter Username
+app.post("/changeusername", (req, res) => {
+  const user_id = req.body.user_id;
+  const newUsername = req.body.newUsername;
+
+  db.query(
+    "SELECT * FROM users WHERE id= ?", //Each user has unique password
+    user_id,
+    (err, result) => {
+      if (err) {
+        res.send({ err: err });
+      } else {
+        db.query(
+          "UPDATE users SET username = ? WHERE id = ?",
+          [newUsername, user_id],
+          (err, result) => {
+            if (err) {
+              console.log(err);
+            } else {
+              db.query(
+                "SELECT * FROM users WHERE id= ?", //Each user has unique password
+                user_id,
+                (err, result2) => {
+                  if (err) {
+                    res.send({ err: err });
+                  } else {
+                    req.session.user = result2;
+                    console.log(req.session.user);
+                    res.send(result2);
+                    //res.send("Username Changed Successfully");
+                  }
+                }
+              );
+            }
+          }
+        );
+      }
+    }
+  );
+});
+
+//Check Username
+app.post("/usernamecheck", (req, res) => {
+  const username = req.body.username;
+  db.query(
+    "SELECT id FROM users WHERE username = ?",
+    [username],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      }
+      if (typeof result === "undefined") {
+        console.log("Database not mounted"); //Fix error - What happens when db is offline
+      }
+      if (result.length > 0) {
+        console.log(result);
+        res.send(false);
+      } else {
+        res.send(true);
+      }
+    }
+  );
+});
+
 //Register visit API
 app.post("/visit", (req, res) => {
   const userId = req.body.user;
@@ -149,7 +257,7 @@ app.post("/busy", (req, res) => {
 app.post("/history", (req, res) => {
   const user_id = req.body.user_id;
   db.query(
-    "SELECT LOCATION_ID, TIMESTAMP, NAME FROM `visits` INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID WHERE USER_ID = ?",
+    "SELECT LOCATION_ID, date_format(TIMESTAMP, '%Y %D %M %H:%i:%s') as TIMESTAMP, NAME, ADDRESS FROM `visits` INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID WHERE USER_ID = ?",
     [user_id],
     (err, result) => {
       if (err) {
@@ -161,22 +269,19 @@ app.post("/history", (req, res) => {
   );
 });
 
-
 //Get POIS API
 app.get("/pois", (req, res) => {
   db.query(
-    "SELECT id, name, types->\"$\" as types, coordinates->\"$\" as coordinates, populartimes->\"$\" as populartimes FROM `locations`",
+    'SELECT id, name, address, types->"$" as types, coordinates->"$" as coordinates, populartimes->"$" as populartimes FROM `locations`',
     (err, result) => {
       if (err) {
         console.log(err);
       } else {
         result.forEach((row) => {
-          row.populartimes = JSON.parse(row.populartimes)
-          row.coordinates = JSON.parse(row.coordinates)
-          row.types = JSON.parse(row.types)
-
-
-        })
+          row.populartimes = JSON.parse(row.populartimes);
+          row.coordinates = JSON.parse(row.coordinates);
+          row.types = JSON.parse(row.types);
+        });
         console.log(result);
         res.send(result);
       }
@@ -184,28 +289,35 @@ app.get("/pois", (req, res) => {
   );
 });
 
-
 function storeJSON() {
   testData.forEach((poi) => {
-      
-      db.query('INSERT INTO locations (id,name,types,coordinates,populartimes) VALUES (?,?,?,?,?)',
-      [poi.id,poi.name,JSON.stringify(poi.types), JSON.stringify(poi.coordinates), JSON.stringify(poi.populartimes) ],
+    db.query(
+      "INSERT INTO locations (id,name,address,types,coordinates,populartimes) VALUES (?,?,?,?,?,?)",
+      [
+        poi.id,
+        poi.name,
+        poi.address,
+        JSON.stringify(poi.types),
+        JSON.stringify(poi.coordinates),
+        JSON.stringify(poi.populartimes),
+      ],
       (err, result) => {
-          if(err){
-              console.log(err)
-          }
-      });
-  })
+        if (err) {
+          console.log(err);
+        }
+      }
+    );
+  });
 }
-
-
-
 
 app.listen(3001, () => {
   console.log("Server running in port 3001");
   //getPOIS();
   //storeJSON();
 });
+
+
+
 //Get busyness from time (120min)
 app.get("/busys", (req, res) => {
   db.query(
