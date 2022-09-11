@@ -336,8 +336,10 @@ function getCaseVisits(user_id) {
 //επιστρεφει οσους ηταν σε ενα location στη συγκεκριμενη χρονικη περιοδο
 function getPossibleCases(locationId, Time) {
   //input location and time and find
-  let timeFrom = Time - 2; //Δεν ειναι σωστα βρες πως γινεται
-  let timeUntil = Time + 2;
+  var timeFrom = new Date();
+  var timeUntil = new Date();
+  timeFrom.setHours(Time.getHours() - 2); //- 2hours
+  timeUntil.setHours(Time.getHours() + 2); //+ 2hours
   db.query(
     "SELECT DISTINCT USER_ID FROM `visits` WHERE TIMESTAMP BETWEEN ? and ?",
     [timeFrom, timeUntil], //'2022-09-10 20:04:00','2022-09-10 20:18:56'
