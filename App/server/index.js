@@ -1,13 +1,12 @@
-const express = require('express')
+const express = require("express");
 const app = express();
-const mysql = require('mysql');
+const mysql = require("mysql");
 const cors = require("cors");
-const bcrypt = require('bcrypt');
-const bodyParser = require('body-parser');
-const cookieParser = require('cookie-parser');
-const session = require('express-session');
-const testData = require('./data/locationData.json');
-
+const bcrypt = require("bcrypt");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
+const session = require("express-session");
+const testData = require("./data/locationData.json");
 
 const networkAdress = "http://192.168.2.7:3000";
 const saltRounds = 10; //Hashing
@@ -310,13 +309,38 @@ function storeJSON() {
   });
 }
 
+function getCaseVisits(user_id) {
+  db.query(
+    "INSERT INTO `covid`(USER_ID, COVID_CASE) VALUES (?, 1)", //Φτιαχνει user log με θετικο covid
+    user_id,
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        db.query(
+          // παιρουμε Location ID και timestamps από τα μέρη που βρέθηκε ο χρήστης με covid της τελευταιες 7 μερες (ισως περιττό το covid_case =1)
+          "SELECT LOCATION_ID , `visits`.TIMESTAMP FROM `covid` INNER JOIN `visits` ON `visits`.USER_ID = `covid`.USER_ID WHERE `covid`.COVID_CASE = 1 AND covid.USER_ID = ? AND TIMESTAMP >= NOW() - INTERVAL 7 DAY",
+          user_id,
+          (err, result) => {
+            if (err) {
+              console.log(err);
+            } else {
+              console.log(result);
+            }
+          }
+        );
+      }
+    }
+  );
+}
 //επιστρεφει οσους ηταν σε ενα location στη συγκεκριμενη χρονικη περιοδο
-function getPossibleCases(locationId, Time){ //input location and time and find
+function getPossibleCases(locationId, Time) {
+  //input location and time and find
   let timeFrom = Time - 2; //Δεν ειναι σωστα βρες πως γινεται
   let timeUntil = Time + 2;
   db.query(
-    'SELECT DISTINCT USER_ID FROM `visits` WHERE TIMESTAMP BETWEEN ? and ?',
-    [timeFrom,timeUntil], //'2022-09-10 20:04:00','2022-09-10 20:18:56'
+    "SELECT DISTINCT USER_ID FROM `visits` WHERE TIMESTAMP BETWEEN ? and ?",
+    [timeFrom, timeUntil], //'2022-09-10 20:04:00','2022-09-10 20:18:56'
     (err, result) => {
       if (err) {
         console.log(err);
@@ -328,20 +352,14 @@ function getPossibleCases(locationId, Time){ //input location and time and find
 }
 
 //ενα fun που θα παιρνει ολα τα visits που εκανε τις τελευταιες 7 μερες αυτος που δηλωσε
-//και τρεξε για το καθε visit το get possible case, μαζεψε ολους του χρηστες και βαλτους σε ενα table possiblecases 
+//και τρεξε για το καθε visit το get possible case, μαζεψε ολους του χρηστες και βαλτους σε ενα table possiblecases
 //οταν συνδεεσαι θα ελεγχει αν ειναι σε αυτο το table
-
-
-
-
 
 app.listen(3001, () => {
   console.log("Server running in port 3001");
   //getPOIS();
   //storeJSON();
 });
-
-
 
 //Get busyness from time (120min)
 app.get("/busys", (req, res) => {
@@ -354,21 +372,13 @@ app.post("/covid", (req, res) => {
   const userId = req.body.user;
   const details = req.body.details;
   //db.query("UPDATE covid SET hascovid = IF(DATEDIFF(DAY,NOW(),timestamp)>=14,TRUE,FALSE) WHERE userId = (?)",
-  db.query("INSERT INTO covid VALUES(?,TRUE,?,NOW())")
-  [userId,details],
-  (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.send("Covid Case Registered");
-    }
-  }
-  
+  db.query("INSERT INTO covid VALUES(?,TRUE,?,NOW())")[(userId, details)],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send("Covid Case Registered");
+      }
+    };
 });
 //
-
-
-
-
-
-
