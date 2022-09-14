@@ -6,7 +6,19 @@ const bcrypt = require("bcrypt");
 const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const session = require("express-session");
-const testData = require("./data/locationData.json");
+const multer = require("multer");
+const path = require("path");
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "data");
+  },
+  filename: (req, file, cb) => {
+    console.log(file);
+    cb(null, "locationdata.json");
+  },
+});
+const upload = multer({ storage: storage });
 
 const networkAdress = "http://192.168.2.7:3000";
 const saltRounds = 10; //Hashing
@@ -41,6 +53,12 @@ const db = mysql.createConnection({
   host: "localhost",
   password: "",
   database: "covidweb",
+});
+
+app.post("/uploadFileAPI", upload.single("file"), (req, res) => {
+  storeJSON();
+  console.log("test");
+  res.send("File Uploaded");
 });
 
 //Login API
@@ -105,11 +123,11 @@ app.post("/adminlogin", (req, res) => {
           throw new Error("Database not mounted"); //Fix error - What happens when db is offline
         }
         if (result.length > 0) {
-          if(password === result[0].password){
+          if (password === result[0].password) {
             req.session.user = result;
-              console.log(req.session.user);
-              res.send(result);
-          }else{
+            console.log(req.session.user);
+            res.send(result);
+          } else {
             res.send({ message: "Wrong username/password combination" });
           }
         } else {
@@ -325,6 +343,7 @@ app.get("/pois", (req, res) => {
 
 //Function that stores JSON file in the db. Used by admin
 function storeJSON() {
+  const testData = require("./data/locationData.json");
   testData.forEach((poi) => {
     db.query(
       "INSERT INTO locations (id,name,address,types,coordinates,populartimes) VALUES (?,?,?,?,?,?)",

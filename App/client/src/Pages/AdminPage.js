@@ -16,12 +16,33 @@ export const AdminPanel = () => {
 
   let navigate = useNavigate();
 
+  const uploadData = () => {
+    const data = new FormData();
+    console.log(selectedFile);
+    data.append("file", selectedFile);
+    Axios.post(ip.concat("uploadFileAPI"), data).then((response) => {
+      console.log(response);
+    });
+  };
+
   return (
     <AdminPageContainer>
       <AdminWrapper>
-        <Button>Upload Data</Button>
+        <Head>Update Data</Head>
+        <Button
+          onClick={() => {
+            uploadData();
+          }}
+        >
+          Upload Data
+        </Button>
+        <StyledInput
+          type="file"
+          onChange={(e) => {
+            setselectedFile(e.target.files[0]);
+          }}
+        ></StyledInput>
         <Button>Delete All Data</Button>
-        <StyledInput type="file"></StyledInput>
       </AdminWrapper>
       <AdminWrapper></AdminWrapper>
     </AdminPageContainer>
@@ -114,7 +135,7 @@ const Head = styled.h1`
   font-size: 2.5em;
   font-weight: normal;
   letter-spacing: 0.24em;
-  color: #fffbfb;
+  color: grey;
   @media only screen and (max-width: 500px) {
     margin-top: 20vh;
     font-size: 3.5em;
