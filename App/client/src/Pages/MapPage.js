@@ -35,7 +35,6 @@ export const MapPage = () => {
         getPOIs();
       } else {
         console.log("not logged in");
-        navigate("/");
       }
     });
   }, [navigate]);
@@ -55,7 +54,13 @@ export const MapPage = () => {
       ></SearchBar>
 
       <CovidMap selectedPOI={selectedPOI} />
-      <GotCovidButton>I have COVID</GotCovidButton>
+      <GotCovidButton
+        onClick={() => {
+          navigate("/Admin");
+        }}
+      >
+        I have COVID
+      </GotCovidButton>
     </MapPageContainer>
   );
 };

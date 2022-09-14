@@ -6,25 +6,61 @@ import styled from "styled-components";
 
 const ip = "http://192.168.2.7:3001/";
 
-export const AdminPanel = () => {
+export const AdminLogin = () => {
   const [username, setUsername] = useState();
   const [password, setPassword] = useState();
   const [loginStatus, setloginStatus] = useState();
-  const [selectedFile, setselectedFile] = useState();
 
   Axios.defaults.withCredentials = true;
 
   let navigate = useNavigate();
 
+  const loginAdmin = () => {
+    Axios.post(ip.concat("adminlogin"), {
+      username: username,
+      password: password,
+    }).then((response) => {
+      console.log(response.data);
+      if (response.data.message) {
+        setloginStatus(response.data.message);
+      } else {
+        setloginStatus(response.data[0].username);
+        navigate("/AdminPanel");
+      }
+    });
+  };
+
   return (
-    <AdminPageContainer>
-      <AdminWrapper>
-        <Button>Upload Data</Button>
-        <Button>Delete All Data</Button>
-        <StyledInput type="file"></StyledInput>
-      </AdminWrapper>
-      <AdminWrapper></AdminWrapper>
-    </AdminPageContainer>
+    <LoginWrapper>
+      <HeadWrapper>
+        <Head>ADMIN LOGIN</Head>
+        <SmallHead>Please sign in to continue</SmallHead>
+      </HeadWrapper>
+      <Form>
+        <StyledInput
+          type="email"
+          placeholder="Username"
+          onChange={(event) => {
+            setUsername(event.target.value);
+          }}
+        />
+        <StyledInput
+          type="password"
+          placeholder="Password"
+          onChange={(event) => {
+            setPassword(event.target.value);
+          }}
+        />
+        <Button onClick={loginAdmin}>LOGIN</Button>
+        <SmallHead>
+          <button
+            onClick={() => {
+              navigate("/map");
+            }}
+          ></button>
+        </SmallHead>
+      </Form>
+    </LoginWrapper>
   );
 };
 
@@ -40,39 +76,6 @@ const ErrorText = styled.h5`
   }
 `;
 
-const AdminPageContainer = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  margin: 0 0;
-  align-items: center;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-around;
-  background-color: rgba(154, 180, 182, 1);
-  width: 100vw;
-  height: 100vh;
-`;
-
-const AdminWrapper = styled.div`
-  width: 40vw;
-  height: 40vh;
-  min-width: 300px;
-  min-height: 500px;
-  background-color: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
-  @media only screen and (max-width: 500px) {
-    width: 100vw;
-    height: 100%;
-    justify-content: start;
-  }
-`;
 const Form = styled.div`
   height: auto;
   width: 100%;
@@ -83,6 +86,23 @@ const Form = styled.div`
   @media only screen and (max-width: 500px) {
     margin-bottom: 0;
     height: auto;
+  }
+`;
+
+const RegisterWrapper = styled.div`
+  width: 30vw;
+  height: 40vh;
+  min-width: 300px;
+  min-height: 500px;
+  background-color: rgba(154, 180, 182, 1);
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+
+  @media only screen and (max-width: 500px) {
+    width: 100vw;
+    height: 100%;
+    justify-content: start;
   }
 `;
 

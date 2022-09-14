@@ -2,7 +2,8 @@ import {Login, Register} from "./Components/Login";
 //import CovidMap from "./Components/CovidMap.jsx"
 import './App.css';
 import {BrowserRouter, Route, Routes} from 'react-router-dom';
-//import {LoginPage} from './Pages/LoginPage'
+import { AdminLogin } from "./Pages/AdminLogin";
+import { AdminPanel } from "./Pages/AdminPage";
 import { MapPage } from "./Pages/MapPage";
 import { SettingsPage } from "./Pages/SettingsPage";
 import styled from "styled-components";
@@ -12,10 +13,13 @@ function App() {
     <BrowserRouter>
       <AppDiv>
         <Routes>
+          <Route path="/Admin" element={<AdminLogin />} />
           <Route path="/" element={<Login></Login>} />
           <Route path="/Map" element={<MapPage></MapPage>} />
           <Route path="/Register" element={<Register />} />
           <Route path="/Settings" element={<SettingsPage />} />
+
+          <Route path="/AdminPanel" element={<AdminPanel />} />
         </Routes>
       </AppDiv>
     </BrowserRouter>

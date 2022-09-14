@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 10, 2022 at 09:30 PM
+-- Generation Time: Sep 14, 2022 at 06:27 PM
 -- Server version: 8.0.30
 -- PHP Version: 7.4.11
 
@@ -20,6 +20,27 @@ SET time_zone = "+00:00";
 --
 -- Database: `covidweb`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin`
+--
+
+CREATE TABLE `admin` (
+  `id` int NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `username` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `admin`
+--
+
+INSERT INTO `admin` (`id`, `name`, `username`, `password`) VALUES
+(4, 'admin', 'admin@admin.com', 'admin'),
+(6, 'admin', 'admin', 'admin');
 
 -- --------------------------------------------------------
 
@@ -63,6 +84,41 @@ INSERT INTO `busyness` (`LOCATION_ID`, `BUSYNESS`, `timestamp`) VALUES
 ('ChIJebC_45BJXhMRZmLKwgG5gaQ', 17, '2022-09-10 17:16:49'),
 ('ChIJebC_45BJXhMRZmLKwgG5gaQ', 2, '2022-09-10 17:16:56'),
 ('ChIJebC_45BJXhMRZmLKwgG5gaQ', 25, '2022-09-10 17:33:16');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cases`
+--
+
+CREATE TABLE `cases` (
+  `USER_ID` int NOT NULL,
+  `DATE_RECORDED` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cases`
+--
+
+INSERT INTO `cases` (`USER_ID`, `DATE_RECORDED`) VALUES
+(20, '2022-09-14 00:00:00'),
+(20, '2022-09-17 00:00:00'),
+(20, '2022-09-19 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -116,6 +172,26 @@ INSERT INTO `locations` (`ID`, `NAME`, `ADDRESS`, `populartimes`, `coordinates`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `possibleinteractions`
+--
+
+CREATE TABLE `possibleinteractions` (
+  `USER_ID` int NOT NULL,
+  `LOCATION_ID` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `DATE_OF_VISIT` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `possibleinteractions`
+--
+
+INSERT INTO `possibleinteractions` (`USER_ID`, `LOCATION_ID`, `DATE_OF_VISIT`) VALUES
+(3, 'ChIJc6nu-pBJXhMR8kfqruS6HhY', '2022-09-10'),
+(3, 'ChIJc6nu-pBJXhMR8kfqruS6HhY', '2022-09-10');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -150,7 +226,10 @@ INSERT INTO `users` (`id`, `name`, `username`, `password`) VALUES
 (17, NULL, 'lufvoj@gmail.com', '$2a$10$RD1yxocmcE.Olt0xclIT7.C1fwDmJLxaIBrXojAoQnzxIXvO2u9EW'),
 (18, NULL, 'te@gmail.com', '$2a$10$MJ77IeVVIkZucz9KxYg0LONGK9nkmfCUTZt5wyS0cPUFBEpETZt.C'),
 (19, NULL, 'ikzilvo@gmail.com', '$2a$10$ZgCMgAp8gVOj.Xlh3GDgv.t8iUnHN1n.HOfLNvycP2nquS.JaY5Ea'),
-(20, NULL, 't2@gmail.com', '$2b$10$8wWfCPUAgG3CooR0KR2EneqPdDqQEpIpSj831KN4F0h2o69E/v/wq');
+(20, NULL, 't2@gmail.com', '$2b$10$8wWfCPUAgG3CooR0KR2EneqPdDqQEpIpSj831KN4F0h2o69E/v/wq'),
+(25, NULL, 'cup@gmail.com', '$2a$10$h0pD2L6aruzpXh9SKCLzf.3TmuN68K2P4wZsOtijCBQmxU/6NeoZi'),
+(26, NULL, 'sun@gmail.com', '$2a$10$.vLQLP9ooh5ejIiNAENS3e7.KWduc4QmUgF1vBQ9GLlf9uv9y3RDy'),
+(27, NULL, 'ka@gmail.com', '$2a$10$hs2CFVnZUKwZ5mNoBPe3ve95kfR/QtEcv.9Hk7BLqKnEBhdiS6niC');
 
 -- --------------------------------------------------------
 
@@ -159,6 +238,7 @@ INSERT INTO `users` (`id`, `name`, `username`, `password`) VALUES
 --
 
 CREATE TABLE `visits` (
+  `VISIT_ID` int NOT NULL,
   `USER_ID` int NOT NULL,
   `LOCATION_ID` varchar(255) NOT NULL,
   `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -168,22 +248,41 @@ CREATE TABLE `visits` (
 -- Dumping data for table `visits`
 --
 
-INSERT INTO `visits` (`USER_ID`, `LOCATION_ID`, `TIMESTAMP`) VALUES
-(3, 'ChIJc6nu-pBJXhMR8kfqruS6HhY', '2022-09-10 17:04:20'),
-(20, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-09-10 17:04:45'),
-(20, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-09-10 17:16:49'),
-(20, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-09-10 17:16:56'),
-(20, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-09-10 17:33:16');
+INSERT INTO `visits` (`VISIT_ID`, `USER_ID`, `LOCATION_ID`, `TIMESTAMP`) VALUES
+(1, 3, 'ChIJc6nu-pBJXhMR8kfqruS6HhY', '2022-09-10 17:04:20'),
+(2, 20, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-09-10 17:04:45'),
+(6, 13, 'ChIJwavW8JBJXhMRj9HvUUVbQzU', '2022-09-13 13:43:07'),
+(7, 5, 'ChIJFU5w76pJXhMRN3QUqgeJI2c', '2022-09-13 13:44:47'),
+(8, 18, 'ChIJnYcKTPZJXhMRr62-I_53jkk', '2022-09-13 13:44:52'),
+(9, 3, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-09-13 13:44:55'),
+(10, 2, 'ChIJQ_ezeI9JXhMRRS4WbeyX-M8', '2022-09-13 13:44:58'),
+(11, 15, 'ChIJk29PI5FJXhMRj16S74PXEL8', '2022-09-13 13:45:12'),
+(12, 17, 'ChIJX6AJbHJJXhMRqardzwDYNhk', '2022-09-13 13:45:14'),
+(13, 15, 'ChIJnYcKTPZJXhMRr62-I_53jkk', '2022-09-13 13:45:16'),
+(14, 17, 'ChIJQ_ezeI9JXhMRRS4WbeyX-M8', '2022-09-13 13:45:24');
 
 --
 -- Indexes for dumped tables
 --
 
 --
+-- Indexes for table `admin`
+--
+ALTER TABLE `admin`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `username` (`username`);
+
+--
 -- Indexes for table `busyness`
 --
 ALTER TABLE `busyness`
   ADD PRIMARY KEY (`LOCATION_ID`,`timestamp`);
+
+--
+-- Indexes for table `cases`
+--
+ALTER TABLE `cases`
+  ADD KEY `USER_ID` (`USER_ID`);
 
 --
 -- Indexes for table `locations`
@@ -201,6 +300,7 @@ ALTER TABLE `users`
 -- Indexes for table `visits`
 --
 ALTER TABLE `visits`
+  ADD PRIMARY KEY (`VISIT_ID`),
   ADD KEY `user_id` (`USER_ID`);
 
 --
@@ -208,14 +308,32 @@ ALTER TABLE `visits`
 --
 
 --
+-- AUTO_INCREMENT for table `admin`
+--
+ALTER TABLE `admin`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `visits`
+--
+ALTER TABLE `visits`
+  MODIFY `VISIT_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `cases`
+--
+ALTER TABLE `cases`
+  ADD CONSTRAINT `cases_ibfk_1` FOREIGN KEY (`USER_ID`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `visits`

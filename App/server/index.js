@@ -87,6 +87,41 @@ app.post("/login", (req, res) => {
   }
 });
 
+//Admin Login API
+
+app.post("/adminlogin", (req, res) => {
+  const username = req.body.username;
+  const password = req.body.password;
+
+  try {
+    db.query(
+      "SELECT * FROM admin WHERE username= ?", //Each user has unique password
+      username,
+      (err, result) => {
+        if (err) {
+          res.send({ err: err });
+        }
+        if (typeof result === "undefined") {
+          throw new Error("Database not mounted"); //Fix error - What happens when db is offline
+        }
+        if (result.length > 0) {
+          if(password === result[0].password){
+            req.session.user = result;
+              console.log(req.session.user);
+              res.send(result);
+          }else{
+            res.send({ message: "Wrong username/password combination" });
+          }
+        } else {
+          res.send({ message: "User doens't exist" });
+        }
+      }
+    );
+  } catch (error) {
+    res.send({ message: "This service is currenty down" });
+  }
+});
+
 //Register API
 app.post("/register", (req, res) => {
   const username = req.body.username;
@@ -288,6 +323,7 @@ app.get("/pois", (req, res) => {
   );
 });
 
+//Function that stores JSON file in the db. Used by admin
 function storeJSON() {
   testData.forEach((poi) => {
     db.query(
@@ -309,9 +345,9 @@ function storeJSON() {
   });
 }
 
-
+//Function that handles the registration of a new covid case, takes in the id of the user and the date in format: "2022-09-12"
 function newCovidCase(user_id, date) {
-  //Fisrt of all we insert the user that got sick in the cases table
+  //First of all we insert the user that got sick in the cases table
   db.query(
     "INSERT INTO `cases` (USER_ID,DATE_RECORDED) VALUES (?,?)",
     [user_id, date],
@@ -320,20 +356,14 @@ function newCovidCase(user_id, date) {
         console.log(err);
       } else {
         db.query(
-          // παιρουμε Location ID από τα μέρη που βρέθηκε ο χρήστης με covid της τελευταιες 7 μερες
+          // Get the Location_IDs from the places the user visited in the last 7 days
           "SELECT LOCATION_ID,date_format(TIMESTAMP, '%Y-%m-%d %H:%i:%s') as TIMESTAMP FROM visits WHERE TIMESTAMP >= DATE(? - INTERVAL 7 day) AND USER_ID= ?",
           [date, user_id],
           (err, result) => {
             if (err) {
               console.log(err);
             } else {
-              result.forEach((visit) => {
-                getPossibleInteractions(
-                  visit.LOCATION_ID,
-                  visit.TIMESTAMP,
-                  user_id
-                );
-              });
+              console.log(result);
             }
           }
         );
@@ -341,16 +371,17 @@ function newCovidCase(user_id, date) {
     }
   );
 }
-//επιστρεφει οσους ηταν σε ενα location στη συγκεκριμενη χρονικη περιοδο
+//Gets all the users that where in the same location in a 4 hour window(-+2hours) from the time the verified case was there
 function getPossibleInteractions(locationId, datetime, user_id) {
+  //querys to the the db are nested to avoid async problems
   db.query(
     "SELECT DISTINCT USER_ID, LOCATION_ID, date_format(TIMESTAMP, '%Y-%m-%d %H:%i:%s') as DATE FROM `visits` WHERE TIMESTAMP BETWEEN DATE_sub(?, INTERVAL 2 hour) AND DATE_ADD(?, INTERVAL 2 hour)",
-    [datetime, datetime], //'2022-09-10 20:04:00','2022-09-10 20:18:56'
+    [datetime, datetime], //datetime format: '2022-09-10 20:04:00','2022-09-10 20:18:56'
     (err, interactions) => {
       if (err) {
         console.log(err);
       } else {
-        //console.log(result[0]);
+        //Filter the user that got sick out from the interactions array
         interactions = interactions.filter((visit) => {
           if (visit.USER_ID === user_id) {
             return false;
