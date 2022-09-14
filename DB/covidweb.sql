@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 10, 2022 at 09:30 PM
+-- Generation Time: Sep 12, 2022 at 11:13 PM
 -- Server version: 8.0.30
 -- PHP Version: 7.4.11
 
@@ -67,6 +67,35 @@ INSERT INTO `busyness` (`LOCATION_ID`, `BUSYNESS`, `timestamp`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `cases`
+--
+
+CREATE TABLE `cases` (
+  `USER_ID` int NOT NULL,
+  `DATE_RECORDED` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `cases`
+--
+
+INSERT INTO `cases` (`USER_ID`, `DATE_RECORDED`) VALUES
+(20, '2022-09-14 00:00:00'),
+(20, '2022-09-17 00:00:00'),
+(20, '2022-09-19 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00'),
+(20, '2022-09-12 00:00:00');
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `estimates`
 --
 
@@ -116,6 +145,18 @@ INSERT INTO `locations` (`ID`, `NAME`, `ADDRESS`, `populartimes`, `coordinates`,
 -- --------------------------------------------------------
 
 --
+-- Table structure for table `possibleinteractions`
+--
+
+CREATE TABLE `possibleinteractions` (
+  `USER_ID` int NOT NULL,
+  `LOCATION_ID` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `DATE_OF_VISIT` date NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Table structure for table `users`
 --
 
@@ -150,7 +191,7 @@ INSERT INTO `users` (`id`, `name`, `username`, `password`) VALUES
 (17, NULL, 'lufvoj@gmail.com', '$2a$10$RD1yxocmcE.Olt0xclIT7.C1fwDmJLxaIBrXojAoQnzxIXvO2u9EW'),
 (18, NULL, 'te@gmail.com', '$2a$10$MJ77IeVVIkZucz9KxYg0LONGK9nkmfCUTZt5wyS0cPUFBEpETZt.C'),
 (19, NULL, 'ikzilvo@gmail.com', '$2a$10$ZgCMgAp8gVOj.Xlh3GDgv.t8iUnHN1n.HOfLNvycP2nquS.JaY5Ea'),
-(20, NULL, 't2@gmail.com', '$2b$10$8wWfCPUAgG3CooR0KR2EneqPdDqQEpIpSj831KN4F0h2o69E/v/wq');
+(20, NULL, 't@gmail.com', '$2b$10$8wWfCPUAgG3CooR0KR2EneqPdDqQEpIpSj831KN4F0h2o69E/v/wq');
 
 -- --------------------------------------------------------
 
@@ -186,6 +227,12 @@ ALTER TABLE `busyness`
   ADD PRIMARY KEY (`LOCATION_ID`,`timestamp`);
 
 --
+-- Indexes for table `cases`
+--
+ALTER TABLE `cases`
+  ADD KEY `USER_ID` (`USER_ID`);
+
+--
 -- Indexes for table `locations`
 --
 ALTER TABLE `locations`
@@ -216,6 +263,12 @@ ALTER TABLE `users`
 --
 -- Constraints for dumped tables
 --
+
+--
+-- Constraints for table `cases`
+--
+ALTER TABLE `cases`
+  ADD CONSTRAINT `cases_ibfk_1` FOREIGN KEY (`USER_ID`) REFERENCES `users` (`id`);
 
 --
 -- Constraints for table `visits`
