@@ -328,7 +328,11 @@ function newCovidCase(user_id, date) {
               console.log(err);
             } else {
               result.forEach((visit) => {
-                getPossibleInteractions(visit.LOCATION_ID, visit.TIMESTAMP);
+                getPossibleInteractions(
+                  visit.LOCATION_ID,
+                  visit.TIMESTAMP,
+                  user_id
+                );
               });
             }
           }
@@ -338,7 +342,7 @@ function newCovidCase(user_id, date) {
   );
 }
 //επιστρεφει οσους ηταν σε ενα location στη συγκεκριμενη χρονικη περιοδο
-function getPossibleInteractions(locationId, datetime) {
+function getPossibleInteractions(locationId, datetime, user_id) {
   db.query(
     "SELECT DISTINCT USER_ID, LOCATION_ID, date_format(TIMESTAMP, '%Y-%m-%d %H:%i:%s') as DATE FROM `visits` WHERE TIMESTAMP BETWEEN DATE_sub(?, INTERVAL 2 hour) AND DATE_ADD(?, INTERVAL 2 hour)",
     [datetime, datetime], //'2022-09-10 20:04:00','2022-09-10 20:18:56'
@@ -347,12 +351,20 @@ function getPossibleInteractions(locationId, datetime) {
         console.log(err);
       } else {
         //console.log(result[0]);
+        interactions = interactions.filter((visit) => {
+          if (visit.USER_ID === user_id) {
+            return false;
+          } else {
+            return true;
+          }
+        });
+
         interactions.forEach((visit) => {
           console.log(visit.USER_ID);
           console.log(visit.LOCATION_ID);
           console.log(visit.DATE);
           db.query(
-            "INSERT INTO `possibleinteractions` (USER_ID,LOCATION_ID,DATE_OF_VISIT) VALUES (?,?)",
+            "INSERT INTO `possibleinteractions` (USER_ID,LOCATION_ID,DATE_OF_VISIT) VALUES (?,?,?)",
             [visit.USER_ID, visit.LOCATION_ID, visit.DATE], //'2022-09-10 20:04:00','2022-09-10 20:18:56'
             (err, result) => {
               if (err) {
