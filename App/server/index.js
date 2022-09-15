@@ -396,6 +396,7 @@ function storeJSON() {
 
 //Function that handles the registration of a new covid case, takes in the id of the user and the date in format: "2022-09-12"
 function newCovidCase(user_id, date) {
+  //"2022-09-12" date format "yyyy-mm-dd"
   //First of all we insert the user that got sick in the cases table
   db.query(
     "INSERT INTO `cases` (USER_ID,DATE_RECORDED) VALUES (?,?)",
@@ -466,7 +467,6 @@ function getPossibleInteractions(locationId, datetime, user_id) {
 
 app.listen(3001, () => {
   console.log("Server running in port 3001");
-  newCovidCase(20, "2022-09-12");
 });
 
 //Get busyness from time (120min)
@@ -477,16 +477,9 @@ app.get("/busys", (req, res) => {
 });
 
 app.post("/covid", (req, res) => {
-  const userId = req.body.user;
-  const details = req.body.details;
+  const user_id = req.body.user_id;
+  const date = req.body.date;
   //db.query("UPDATE covid SET hascovid = IF(DATEDIFF(DAY,NOW(),timestamp)>=14,TRUE,FALSE) WHERE userId = (?)",
-  db.query("INSERT INTO covid VALUES(?,TRUE,?,NOW())")[(userId, details)],
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.send("Covid Case Registered");
-      }
-    };
+  newCovidCase(user_id, date);
 });
 //

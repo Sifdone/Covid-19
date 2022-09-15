@@ -9,12 +9,15 @@ import SearchBar from "../Components/SearchBar";
 const ip = "http://192.168.2.7:3001/";
 
 export const MapPage = () => {
-  const [loggedInUser, setloggedInUser] = useState();
+  const [loggedInUser, setloggedInUser] = useState({});
   const [selectedPOI, setselectedPOI] = useState({});
   //    const [selectedType,setselectedType] =useState({});
   // eslint-disable-next-line
   const [selectedLocation, setselectedLocation] = useState({});
   const [locationData, setlocationData] = useState({});
+
+  //get current date for testing
+  let currentDate = new Date().toJSON().slice(0, 10);
 
   let navigate = useNavigate();
 
@@ -26,12 +29,23 @@ export const MapPage = () => {
     });
   };
 
+  const registerCase = (date) => {
+    Axios.post(ip.concat("covid"), {
+      user_id: loggedInUser.id,
+      date: date,
+    }).then((response) => {
+      console.log(response.data);
+      if (response.data.message) {
+      }
+    });
+  };
+
   useEffect(() => {
     Axios.get(ip.concat("login")).then((response) => {
       if (response.data.loggedIn === true) {
         console.log(response.data.loggedIn);
         console.log("logged in");
-        setloggedInUser(response.data.user[0].username);
+        setloggedInUser(response.data.user[0]);
         getPOIs();
       } else {
         console.log("not logged in");
@@ -42,7 +56,7 @@ export const MapPage = () => {
   return (
     <MapPageContainer>
       <HeadBar>
-        <HeaderTextUser>{loggedInUser} | </HeaderTextUser>
+        <HeaderTextUser>{loggedInUser.username} | </HeaderTextUser>
         <HeaderTextLogout href="./">Logout</HeaderTextLogout>
         <HeaderTextUser> | </HeaderTextUser>
         <HeaderTextLogout href="./settings">Settings</HeaderTextLogout>
@@ -56,7 +70,7 @@ export const MapPage = () => {
       <CovidMap selectedPOI={selectedPOI} />
       <GotCovidButton
         onClick={() => {
-          navigate("/Admin");
+          registerCase(currentDate);
         }}
       >
         I have COVID
