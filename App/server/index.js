@@ -346,21 +346,51 @@ function storeJSON() {
   const testData = require("./data/locationData.json");
   testData.forEach((poi) => {
     db.query(
-      "INSERT INTO locations (id,name,address,types,coordinates,populartimes) VALUES (?,?,?,?,?,?)",
-      [
-        poi.id,
-        poi.name,
-        poi.address,
-        JSON.stringify(poi.types),
-        JSON.stringify(poi.coordinates),
-        JSON.stringify(poi.populartimes),
-      ],
+      "SELECT * FROM locations WHERE id = ?",
+      [poi.id],
       (err, result) => {
         if (err) {
           console.log(err);
         }
+        if (result.length > 0) {
+          db.query(
+            "UPDATE locations SET types = ? ,populartimes = ? WHERE id = ?",
+            [
+              JSON.stringify(poi.types),
+              JSON.stringify(poi.populartimes),
+              poi.id,
+            ],
+            (err, result) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("POI Update successfull");
+              }
+            }
+          );
+        } else {
+          db.query(
+            "INSERT INTO locations (id,name,address,types,coordinates,populartimes) VALUES (?,?,?,?,?,?)",
+            [
+              poi.id,
+              poi.name,
+              poi.address,
+              JSON.stringify(poi.types),
+              JSON.stringify(poi.coordinates),
+              JSON.stringify(poi.populartimes),
+            ],
+            (err, result) => {
+              if (err) {
+                console.log(err);
+              } else {
+                console.log("POI inserted");
+              }
+            }
+          );
+        }
       }
-    );
+    );    
+    
   });
 }
 
