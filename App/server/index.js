@@ -501,7 +501,7 @@ app.get("/totalCases", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      res.send(result[0].cases);
+      res.send({ cases: result[0].cases });
     }
   });
 });
@@ -511,7 +511,7 @@ app.get("/totalVisits", (req, res) => {
     if (err) {
       console.log(err);
     } else {
-      res.send(result[0].visits);
+      res.send({ visits: result[0].visits });
     }
   });
 });
