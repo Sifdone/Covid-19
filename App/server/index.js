@@ -320,6 +320,21 @@ app.post("/history", (req, res) => {
     }
   );
 });
+//Get cases history
+app.post("/caseshistory", (req, res) => {
+  const user_id = req.body.user_id;
+  db.query(
+    "SELECT DATE_RECORDED FROM cases WHERE USER_ID = ?",
+    [user_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.send(result);
+      }
+    }
+  );
+});
 
 //Get POIS API
 app.get("/pois", (req, res) => {
@@ -389,8 +404,7 @@ function storeJSON() {
           );
         }
       }
-    );    
-    
+    );
   });
 }
 
@@ -465,8 +479,6 @@ function getPossibleInteractions(locationId, datetime, user_id) {
 //και τρεξε για το καθε visit το get possible case, μαζεψε ολους του χρηστες και βαλτους σε ενα table possiblecases
 //οταν συνδεεσαι θα ελεγχει αν ειναι σε αυτο το table
 
-
-
 //Get busyness from time (120min)
 app.get("/busys", (req, res) => {
   db.query(
@@ -484,36 +496,27 @@ app.post("/covid", (req, res) => {
 
 //Admin APIs
 
-
-
-app.get("/totalCases",(req,res)=>{
-  db.query(
-    "SELECT count(*) as cases FROM visits",
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.send(result[0].cases);
-      }
+app.get("/totalCases", (req, res) => {
+  db.query("SELECT count(*) as cases FROM visits", (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result[0].cases);
     }
-  );
-})
+  });
+});
 
-app.get("/totalVisits",(req,res)=>{
-  db.query(
-    "SELECT count(*) as visits FROM visits",
-    (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.send(result[0].visits);
-      }
+app.get("/totalVisits", (req, res) => {
+  db.query("SELECT count(*) as visits FROM visits", (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.send(result[0].visits);
     }
-  );
-})
+  });
+});
 
-
-app.get("/totalVisitsByCases",(req,res)=>{
+app.get("/totalVisitsByCases", (req, res) => {
   db.query(
     "SELECT count(*) as visitsbycases FROM visits INNER JOIN cases ON cases.USER_ID = visits.USER_ID WHERE visits.TIMESTAMP BETWEEN DATE_SUB(DATE_RECORDED,INTERVAL 7 DAY) AND DATE_ADD(DATE_RECORDED, INTERVAL 14 DAY)",
     (err, result) => {
@@ -524,30 +527,28 @@ app.get("/totalVisitsByCases",(req,res)=>{
       }
     }
   );
-})
+});
 
-
-
-app.get("/getTypeScores",(req,res)=>{
-  let types = []
+app.get("/getTypeScores", (req, res) => {
+  let types = [];
   db.query(
     'SELECT JSON_EXTRACT(types,"$") as types FROM `locations`',
     (err, result) => {
       if (err) {
         console.log(err);
       } else {
-        result.forEach((typeSet)=>{
+        result.forEach((typeSet) => {
           typeSet.types = JSON.parse(typeSet.types);
-          types =types.concat(typeSet.types)
-        })
+          types = types.concat(typeSet.types);
+        });
         types.sort();
-        let i =0;
-        let j=0;
+        let i = 0;
+        let j = 0;
         let typeScore = [{}];
-        while(i<types.length){
-          typeScore[j] = {type: types[i], score:1};
-          while(types[i]===types[i+1]){
-            typeScore[j].score ++;
+        while (i < types.length) {
+          typeScore[j] = { type: types[i], score: 1 };
+          while (types[i] === types[i + 1]) {
+            typeScore[j].score++;
             i++;
           }
           i++;
@@ -557,14 +558,9 @@ app.get("/getTypeScores",(req,res)=>{
       }
     }
   );
-})
-
-
-
-
-
+});
 
 app.listen(3001, () => {
   console.log("Server running in port 3001");
-  getTypes();
+  //getTypes();
 });

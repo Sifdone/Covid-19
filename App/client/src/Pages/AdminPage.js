@@ -9,12 +9,13 @@ import styled from "styled-components";
 const ip = "http://192.168.2.7:3001/";
 
 export const AdminPanel = () => {
-// eslint-disable-next-line
+  // eslint-disable-next-line
   const [loginStatus, setloginStatus] = useState();
   const [selectedFile, setselectedFile] = useState();
-
+  const [totalvisits, settotalvisits] = useState();
+  const [totalcases, settotalcases] = useState();
   Axios.defaults.withCredentials = true;
-// eslint-disable-next-line
+  // eslint-disable-next-line
   let navigate = useNavigate();
 
   const uploadData = () => {
@@ -25,6 +26,22 @@ export const AdminPanel = () => {
       console.log(response);
     });
   };
+  const getTotalCases = () => {
+    Axios.get(ip.concat("totalCases")).then((response) => {
+      settotalcases(response.data);
+      console.log(response.data);
+    });
+  };
+  const getTotalVisits = () => {
+    Axios.get(ip.concat("totalVisits")).then((response) => {
+      settotalvisits(response.data);
+      console.log(response.data);
+    });
+  };
+  useEffect(() => {
+    getTotalVisits();
+    getTotalCases();
+  }, []);
 
   return (
     <AdminPageContainer>
@@ -46,8 +63,8 @@ export const AdminPanel = () => {
         <Button>Delete All Data</Button>
       </AdminWrapper>
       <AdminWrapper>
-        <Number num="5" />
-        <Number num="5" />
+        <Number num={totalcases} />
+        <Number num={totalvisits} />
       </AdminWrapper>
     </AdminPageContainer>
   );

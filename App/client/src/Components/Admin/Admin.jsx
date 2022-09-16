@@ -19,5 +19,4 @@ FROM
 ) q
 WHERE comp is not null
 GROUP BY comp
-
  */
