@@ -1,19 +1,20 @@
 import * as React from "react";
 import { useNavigate } from "react-router";
+// eslint-disable-next-line
 import { useState, useEffect } from "react";
+import { Number } from "../Components/Admin/Number.jsx";
 import Axios from "axios";
 import styled from "styled-components";
 
 const ip = "http://192.168.2.7:3001/";
 
 export const AdminPanel = () => {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+// eslint-disable-next-line
   const [loginStatus, setloginStatus] = useState();
   const [selectedFile, setselectedFile] = useState();
 
   Axios.defaults.withCredentials = true;
-
+// eslint-disable-next-line
   let navigate = useNavigate();
 
   const uploadData = () => {
@@ -44,12 +45,16 @@ export const AdminPanel = () => {
         ></StyledInput>
         <Button>Delete All Data</Button>
       </AdminWrapper>
-      <AdminWrapper></AdminWrapper>
+      <AdminWrapper>
+        <Number num="5" />
+        <Number num="5" />
+      </AdminWrapper>
     </AdminPageContainer>
   );
 };
 
 //STYLED ELEMENTS
+// eslint-disable-next-line
 const ErrorText = styled.h5`
   text-align: center;
   font-size: 0.9em;
@@ -94,6 +99,7 @@ const AdminWrapper = styled.div`
     justify-content: start;
   }
 `;
+// eslint-disable-next-line
 const Form = styled.div`
   height: auto;
   width: 100%;
@@ -106,7 +112,7 @@ const Form = styled.div`
     height: auto;
   }
 `;
-
+// eslint-disable-next-line
 const LoginWrapper = styled.div`
   width: 30vw;
   height: 35vh;
@@ -123,7 +129,7 @@ const LoginWrapper = styled.div`
     justify-content: start;
   }
 `;
-
+// eslint-disable-next-line
 const HeadWrapper = styled.div`
   margin-bottom: 1.5em;
 `;
@@ -141,7 +147,7 @@ const Head = styled.h1`
     font-size: 3.5em;
   }
 `;
-
+// eslint-disable-next-line
 const SmallHead = styled.h5`
   text-align: center;
   font-size: 0.9em;
