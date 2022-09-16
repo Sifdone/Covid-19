@@ -2,19 +2,19 @@ import * as React from "react";
 import { useNavigate } from "react-router";
 // eslint-disable-next-line
 import { useState, useEffect } from "react";
-import { Number } from "../Components/Admin/Number.jsx";
+import { StatsComponents } from "../Components/Admin/StatsComponent.jsx";
 import Axios from "axios";
 import styled from "styled-components";
 
 const ip = "http://192.168.2.7:3001/";
 
 export const AdminPanel = () => {
-// eslint-disable-next-line
+  // eslint-disable-next-line
   const [loginStatus, setloginStatus] = useState();
   const [selectedFile, setselectedFile] = useState();
 
   Axios.defaults.withCredentials = true;
-// eslint-disable-next-line
+  // eslint-disable-next-line
   let navigate = useNavigate();
 
   const uploadData = () => {
@@ -46,8 +46,7 @@ export const AdminPanel = () => {
         <Button>Delete All Data</Button>
       </AdminWrapper>
       <AdminWrapper>
-        <Number num="5" />
-        <Number num="5" />
+        <StatsComponents></StatsComponents>
       </AdminWrapper>
     </AdminPageContainer>
   );
