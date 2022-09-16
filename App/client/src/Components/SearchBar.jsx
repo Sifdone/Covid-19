@@ -1,12 +1,13 @@
-import React, { useEffect } from 'react'
-import styled from 'styled-components';
-import {useState} from 'react';
+import React, { useEffect } from "react";
+import styled from "styled-components";
+import { useState } from "react";
 
 function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
   const [searchHasFocus, setsearchHasFocus] = useState(false);
   const [resultsHasFocus, setresultsHasFocus] = useState(true);
   const [focus, setFocus] = useState(false);
   const [filterData, setFilterData] = useState([]);
+  // eslint-disable-next-line
   const [types, setTypes] = useState([]);
   const [filterType, setFilterType] = useState([]);
 
@@ -39,7 +40,7 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
   const handleResultBlur = () => {
     setresultsHasFocus(false);
   };
-
+  /*
   function getLocationTypes(data) {
     let locationTypes = [];
     data.forEach((poi) => {
@@ -50,7 +51,7 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
       });
     });
     return locationTypes;
-  }
+  } */
 
   /* const filterByType = (type,data) => {
         newFilterByType = 
@@ -160,16 +161,14 @@ const Results = styled.div`
   transition: all 0.2s ease-out;
 `;
 
-
 const Search = styled.div`
-    z-index: 3;    
-    width: 80%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-
-`
+  z-index: 3;
+  width: 80%;
+  max-width: 800px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`;
 
 const SearchInput = styled.input`
   width: 100%;
@@ -212,5 +211,3 @@ const SearchInput = styled.input`
     }
   }
 `;
-
-

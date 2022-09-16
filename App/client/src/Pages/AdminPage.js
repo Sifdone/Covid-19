@@ -12,7 +12,8 @@ export const AdminPanel = () => {
   // eslint-disable-next-line
   const [loginStatus, setloginStatus] = useState();
   const [selectedFile, setselectedFile] = useState();
-
+  const [totalvisits, settotalvisits] = useState();
+  const [totalcases, settotalcases] = useState();
   Axios.defaults.withCredentials = true;
   // eslint-disable-next-line
   let navigate = useNavigate();
@@ -25,6 +26,22 @@ export const AdminPanel = () => {
       console.log(response);
     });
   };
+  const getTotalCases = () => {
+    Axios.get(ip.concat("totalCases")).then((response) => {
+      settotalcases(response.data);
+      console.log(response.data);
+    });
+  };
+  const getTotalVisits = () => {
+    Axios.get(ip.concat("totalVisits")).then((response) => {
+      settotalvisits(response.data);
+      console.log(response.data);
+    });
+  };
+  useEffect(() => {
+    getTotalVisits();
+    getTotalCases();
+  }, []);
 
   return (
     <AdminPageContainer>
