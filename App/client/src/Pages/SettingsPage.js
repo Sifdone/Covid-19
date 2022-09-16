@@ -1,4 +1,5 @@
 import styled from "styled-components";
+import { React } from "react";
 import { useNavigate } from "react-router";
 import { useState, useEffect } from "react";
 import Axios from "axios";
@@ -18,6 +19,7 @@ export const SettingsPage = () => {
   const [passwordChanged, setpasswordChanged] = useState(false);
   const [usernameChanged, setusernameChanged] = useState(false);
   const [history, sethistory] = useState([]);
+  const [casehistory, setcasehistory] = useState([]);
 
   const getHistory = (user) => {
     console.log(user);
@@ -28,7 +30,15 @@ export const SettingsPage = () => {
       console.log(response.data);
     });
   };
-
+  const getCasesHistory = (user) => {
+    console.log(user);
+    Axios.post(ip.concat("caseshistory"), {
+      user_id: user,
+    }).then((response) => {
+      setcasehistory(response.data);
+      console.log(response.data);
+    });
+  };
   let navigate = useNavigate();
 
   Axios.defaults.withCredentials = true;
@@ -41,6 +51,7 @@ export const SettingsPage = () => {
         console.log(response.data.user[0]);
         setloggedInUser(response.data.user[0]);
         getHistory(response.data.user[0].id);
+        getCasesHistory(response.data.user[0].id);
       } else {
         console.log("not logged in");
         navigate("/");
@@ -224,6 +235,16 @@ export const SettingsPage = () => {
                 <HistoryTitle>{poi.NAME}</HistoryTitle>
                 <HistoryText>{poi.ADDRESS}</HistoryText>
                 <HistoryText>{poi.TIMESTAMP}</HistoryText>
+              </HistoryItem>
+            );
+          })}
+        </HistoryContainer>
+        <Head>Cases</Head>
+        <HistoryContainer>
+          {casehistory.map((poi) => {
+            return (
+              <HistoryItem>
+                <HistoryTitle>{poi.DATE_RECORDED}</HistoryTitle>
               </HistoryItem>
             );
           })}
@@ -442,7 +463,7 @@ const Button = styled.button`
     background: linear-gradient(89.81deg, #c2b85c -3.52%, #bdb251 98.63%);
   }
 `;
-
+/** 
 const ButtonSmall = styled.button`
   color: white;
   text-align: center;
@@ -457,7 +478,7 @@ const ButtonSmall = styled.button`
     background: linear-gradient(89.81deg, #c2b85c -3.52%, #bdb251 98.63%);
   }
 `;
-
+*/
 const ButtonInactive = styled.button`
   color: white;
   margin-bottom: 1em;
