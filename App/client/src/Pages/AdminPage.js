@@ -12,8 +12,14 @@ export const AdminPanel = () => {
   // eslint-disable-next-line
   const [loginStatus, setloginStatus] = useState();
   const [selectedFile, setselectedFile] = useState();
-  const [totalvisits, settotalvisits] = useState();
-  const [totalcases, settotalcases] = useState();
+  const [totalVisits, settotalVisits] = useState({});
+  const [totalCases, settotalCases] = useState({});
+  const [typeScores, settypeScores] = useState([]);
+  const [typeScoresByCases, settypeScoresByCases] = useState([]);
+  const [totalVisitsByCases, settotalVisitsByCases] = useState({});
+  const [statsVisible, setstatsVisible] = useState(true);
+  const [chartsVisible, setchartsVisible] = useState(false);
+
   Axios.defaults.withCredentials = true;
   // eslint-disable-next-line
   let navigate = useNavigate();
@@ -23,29 +29,53 @@ export const AdminPanel = () => {
     console.log(selectedFile);
     data.append("file", selectedFile);
     Axios.post(ip.concat("uploadFileAPI"), data).then((response) => {
-      console.log(response);
+      //console.log(response);
     });
   };
   const getTotalCases = () => {
     Axios.get(ip.concat("totalCases")).then((response) => {
-      settotalcases(response.data);
-      console.log(response.data);
+      settotalCases(response.data);
+      //console.log(response.data);
     });
   };
   const getTotalVisits = () => {
     Axios.get(ip.concat("totalVisits")).then((response) => {
-      settotalvisits(response.data);
+      settotalVisits(response.data);
+      //console.log(response.data);
+    });
+  };
+
+  const getTotalVisitsByCases = () => {
+    Axios.get(ip.concat("totalVisitsByCases")).then((response) => {
+      settotalVisitsByCases(response.data);
+      //console.log(response.data);
+    });
+  };
+  const getTypeScores = () => {
+    Axios.get(ip.concat("getTypeScores")).then((response) => {
+      settypeScores(response.data);
       console.log(response.data);
     });
   };
+
+  const getTypeScoresByCases = () => {
+    Axios.get(ip.concat("getTypeScoresByCases")).then((response) => {
+      settypeScoresByCases(response.data);
+      console.log(response.data);
+    });
+  };
+
   useEffect(() => {
     getTotalVisits();
     getTotalCases();
+    getTotalVisitsByCases();
+    getTypeScores();
+    getTypeScoresByCases();
   }, []);
 
   return (
     <AdminPageContainer>
-      <AdminWrapper>
+      <DataWrapper>
         <Head>Update Data</Head>
         <Button
           onClick={() => {
@@ -61,10 +91,30 @@ export const AdminPanel = () => {
           }}
         ></StyledInput>
         <Button>Delete All Data</Button>
-      </AdminWrapper>
-      <AdminWrapper>
-        <StatsComponents></StatsComponents>
-      </AdminWrapper>
+      </DataWrapper>
+      <StatsWrapper>
+        {statsVisible && (
+          <StatsComponents
+            totalVisits={totalVisits.visits}
+            totalCases={totalCases.cases}
+            visitsByCases={totalVisitsByCases.visitsByCases}
+            typeScore={typeScores}
+            typeScoresByCases={typeScoresByCases}
+          ></StatsComponents>
+        )}
+        <Navigation>
+          <NavButton
+            onClick={() => {
+              setstatsVisible(true);
+            }}
+          ></NavButton>
+          <NavButton
+            onClick={() => {
+              setstatsVisible(false);
+            }}
+          ></NavButton>
+        </Navigation>
+      </StatsWrapper>
     </AdminPageContainer>
   );
 };
@@ -92,14 +142,14 @@ const AdminPageContainer = styled.div`
   align-items: center;
   display: flex;
   flex-direction: row;
-  justify-content: space-around;
+  justify-content: space-evenly;
   background-color: rgba(154, 180, 182, 1);
   width: 100vw;
   height: 100vh;
 `;
 
-const AdminWrapper = styled.div`
-  width: 40vw;
+const StatsWrapper = styled.div`
+  width: 50vw;
   height: 40vh;
   min-width: 300px;
   min-height: 500px;
@@ -108,50 +158,56 @@ const AdminWrapper = styled.div`
   flex-direction: column;
   align-items: center;
   justify-content: center;
-
-  @media only screen and (max-width: 500px) {
-    width: 100vw;
-    height: 100%;
-    justify-content: start;
-  }
 `;
-// eslint-disable-next-line
-const Form = styled.div`
-  height: auto;
-  width: 100%;
+
+const DataWrapper = styled.div`
+  width: 25vw;
+  height: 40vh;
+  min-width: 300px;
+  min-height: 500px;
+  background-color: white;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: space-evenly;
+`;
+
+const Navigation = styled.div`
+  height: auto;
+  width: 15%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-evenly;
   margin-bottom: 1em;
   @media only screen and (max-width: 500px) {
     margin-bottom: 0;
     height: auto;
   }
 `;
-// eslint-disable-next-line
-const LoginWrapper = styled.div`
-  width: 30vw;
-  height: 35vh;
-  min-width: 300px;
-  min-height: 400px;
-  background-color: rgba(154, 180, 182, 1);
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
+const NavButton = styled.button`
+  color: white;
+  margin-bottom: 1em;
+  text-align: center;
+  width: 2em;
+  height: 2em;
+  background: linear-gradient(89.81deg, #d8cc60 -3.52%, #d1d35c 98.63%);
+  border: none;
+  border-radius: 30px;
+  transition: all 0.2s ease-in;
 
-  @media only screen and (max-width: 500px) {
-    width: 100vw;
-    height: 100%;
-    justify-content: start;
+  &:hover {
+    background: linear-gradient(89.81deg, #c2b85c -3.52%, #bdb251 98.63%);
   }
 `;
+
 // eslint-disable-next-line
 const HeadWrapper = styled.div`
   margin-bottom: 1.5em;
 `;
 
 const Head = styled.h1`
-  margin-top: 5vh;
+  margin-top: 2vh;
   padding-left: 0.3em;
   text-align: center;
   font-size: 2.5em;

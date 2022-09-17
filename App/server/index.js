@@ -523,7 +523,7 @@ app.get("/totalVisitsByCases", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        res.send(result[0].visitsbycases);
+        res.send({ visitsByCases: result[0].visitsbycases });
       }
     }
   );
@@ -544,7 +544,7 @@ app.get("/getTypeScores", (req, res) => {
         types.sort();
         let i = 0;
         let j = 0;
-        let typeScore = [{}];
+        let typeScore = [];
         while (i < types.length) {
           typeScore[j] = { type: types[i], score: 1 };
           while (types[i] === types[i + 1]) {
@@ -554,13 +554,110 @@ app.get("/getTypeScores", (req, res) => {
           i++;
           j++;
         }
+        typeScore.sort((a, b) => {
+          return b.score - a.score;
+        });
         res.send(typeScore);
       }
     }
   );
 });
 
+app.get("/getTypeScoresByCases", (req, res) => {
+  let types = [];
+  db.query(
+    'SELECT JSON_EXTRACT(types,"$") as types FROM `visits` INNER JOIN `cases` ON visits.USER_ID = cases.USER_ID INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID WHERE visits.TIMESTAMP BETWEEN DATE_SUB(DATE_RECORDED,INTERVAL 7 DAY) AND DATE_ADD(DATE_RECORDED, INTERVAL 14 DAY);',
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        result.forEach((typeSet) => {
+          typeSet.types = JSON.parse(typeSet.types);
+          types = types.concat(typeSet.types);
+        });
+        types.sort();
+        let i = 0;
+        let j = 0;
+        let typeScore = [];
+        while (i < types.length) {
+          typeScore[j] = { type: types[i], score: 1 };
+          while (types[i] === types[i + 1]) {
+            typeScore[j].score++;
+            i++;
+          }
+          i++;
+          j++;
+        }
+        typeScore.sort((a, b) => {
+          return b.score - a.score;
+        });
+        res.send(typeScore);
+      }
+    }
+  );
+});
+
+//APIs For Charts
+
+function getVisitCountPerDay(interval, date) {
+  if (interval === "month") {
+    db.query(
+      "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM visits WHERE MONTH(visits.TIMESTAMP) = MONTH(?) GROUP BY DAY(TIMESTAMP) ",
+      [interval],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+  }
+  if (interval === "week") {
+    db.query(
+      "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM visits WHERE WEEK(visits.TIMESTAMP) = WEEK(?) GROUP BY DAY(TIMESTAMP) ",
+      [date],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+  }
+}
+
+function getVisitByCasesCountPerDay(interval, date) {
+  if (interval === "month") {
+    db.query(
+      "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM `visits` INNER JOIN `cases` ON visits.USER_ID = cases.USER_ID INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID  WHERE MONTH(visits.TIMESTAMP) = MONTH(?) GROUP BY DAY(TIMESTAMP) ",
+      [interval],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+  }
+  if (interval === "week") {
+    db.query(
+      "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM `visits` INNER JOIN `cases` ON visits.USER_ID = cases.USER_ID INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID WHERE WEEK(visits.TIMESTAMP) = WEEK(?) GROUP BY DAY(TIMESTAMP) ",
+      [date],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+  }
+}
+
 app.listen(3001, () => {
   console.log("Server running in port 3001");
-  //getTypes();
+  getVisitCountPerDay("week", "22-9-13");
 });
