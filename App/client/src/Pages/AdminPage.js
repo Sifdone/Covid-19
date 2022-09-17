@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 // eslint-disable-next-line
 import { useState, useEffect } from "react";
 import { StatsComponents } from "../Components/Admin/StatsComponent.jsx";
+import { ChartsComponent } from "../Components/Admin/ChartsComponent.jsx";
 import Axios from "axios";
 import styled from "styled-components";
 
@@ -19,6 +20,8 @@ export const AdminPanel = () => {
   const [totalVisitsByCases, settotalVisitsByCases] = useState({});
   const [statsVisible, setstatsVisible] = useState(true);
   const [chartsVisible, setchartsVisible] = useState(false);
+  const [visitByCasesCountPerDay, setvisitByCasesCountPerDay] = useState(false);
+  const [visitCountPerDay, setvisitCountPerDay] = useState(false);
 
   Axios.defaults.withCredentials = true;
   // eslint-disable-next-line
@@ -65,12 +68,32 @@ export const AdminPanel = () => {
     });
   };
 
+  const getVisitByCasesCountPerDay = (interval, date) => {
+    Axios.post(ip.concat("getVisitCountPerDay"), {
+      interval: interval,
+      date: date,
+    }).then((response) => {
+      setvisitByCasesCountPerDay(response.data);
+    });
+  };
+
+  const getVisitCountPerDay = (interval, date) => {
+    Axios.post(ip.concat("getVisitCountPerDay"), {
+      interval: interval,
+      date: date,
+    }).then((response) => {
+      setvisitCountPerDay(response.data);
+    });
+  };
+
   useEffect(() => {
     getTotalVisits();
     getTotalCases();
     getTotalVisitsByCases();
     getTypeScores();
     getTypeScoresByCases();
+    getVisitCountPerDay("week", "2022-09-13");
+    getVisitByCasesCountPerDay("week", "2022-09-13");
   }, []);
 
   return (
@@ -101,6 +124,13 @@ export const AdminPanel = () => {
             typeScore={typeScores}
             typeScoresByCases={typeScoresByCases}
           ></StatsComponents>
+        )}
+
+        {chartsVisible && (
+          <ChartsComponent
+            visitByCasesCountPerDay={visitByCasesCountPerDay}
+            visitCountPerDay={visitCountPerDay}
+          ></ChartsComponent>
         )}
         <Navigation>
           <NavButton

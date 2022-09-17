@@ -599,7 +599,9 @@ app.get("/getTypeScoresByCases", (req, res) => {
 
 //APIs For Charts
 
-function getVisitCountPerDay(interval, date) {
+app.post("/getVisitCountPerDay", (req, res) => {
+  const interval = req.body.interval;
+  const date = req.body.date;
   if (interval === "month") {
     db.query(
       "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM visits WHERE MONTH(visits.TIMESTAMP) = MONTH(?) GROUP BY DAY(TIMESTAMP) ",
@@ -626,7 +628,38 @@ function getVisitCountPerDay(interval, date) {
       }
     );
   }
-}
+});
+
+app.post("/getVisitByCasesCountPerDay", (req, res) => {
+  const interval = req.body.interval;
+  const date = req.body.date;
+  if (interval === "month") {
+    db.query(
+      "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM `visits` INNER JOIN `cases` ON visits.USER_ID = cases.USER_ID INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID  WHERE MONTH(visits.TIMESTAMP) = MONTH(?) GROUP BY DAY(TIMESTAMP) ",
+      [interval],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+  }
+  if (interval === "week") {
+    db.query(
+      "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM `visits` INNER JOIN `cases` ON visits.USER_ID = cases.USER_ID INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID WHERE WEEK(visits.TIMESTAMP) = WEEK(?) GROUP BY DAY(TIMESTAMP) ",
+      [date],
+      (err, result) => {
+        if (err) {
+          console.log(err);
+        } else {
+          console.log(result);
+        }
+      }
+    );
+  }
+});
 
 function getVisitByCasesCountPerDay(interval, date) {
   if (interval === "month") {
@@ -659,5 +692,5 @@ function getVisitByCasesCountPerDay(interval, date) {
 
 app.listen(3001, () => {
   console.log("Server running in port 3001");
-  getVisitCountPerDay("week", "22-9-13");
+  // getVisitCountPerDay("week", "22-9-13");
 });
