@@ -5,6 +5,11 @@ const bcrypt = require("bcryptjs");
 const seedQuery = fs.readFileSync("seedvisits.sql", { encoding: "utf-8" });
 
 //connect to the database
+function randomDate(start, end) {
+  return new Date(
+    start.getTime() + Math.random() * (end.getTime() - start.getTime())
+  );
+}
 
 const connection = mysql.createConnection({
   user: "root",
@@ -20,11 +25,11 @@ function setValue(value) {
 }
 
 let locationId = "";
-
+const date = randomDate(new Date(2022, 0, 1), new Date());
 function insertVisits() {
   connection.query(
-    "INSERT INTO visits (USER_ID,LOCATION_ID) VALUES (?,?)",
-    [randomnumber, locationId],
+    "INSERT INTO visits (USER_ID,LOCATION_ID,TIMESTAMP) VALUES (?,?,?)",
+    [randomnumber, locationId, date],
     (err) => {
       if (err) {
         throw err;
@@ -33,7 +38,9 @@ function insertVisits() {
         "Seed successful! UserID: " +
           randomnumber +
           " LocationId: " +
-          locationId
+          locationId +
+          "Date" +
+          date
       );
       connection.end();
     }
@@ -56,5 +63,3 @@ connection.query(
     }
   }
 );
-
-

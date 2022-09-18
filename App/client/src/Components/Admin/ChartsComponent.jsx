@@ -4,6 +4,7 @@ import styled from "styled-components";
 import { Bar } from "react-chartjs-2";
 // eslint-disable-next-line
 import Chart from "chart.js/auto";
+
 export const ChartsComponent = ({
   visitByCasesCountPerDay,
   visitCountPerDay,

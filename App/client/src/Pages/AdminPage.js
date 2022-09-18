@@ -6,8 +6,9 @@ import { StatsComponents } from "../Components/Admin/StatsComponent.jsx";
 import { ChartsComponent } from "../Components/Admin/ChartsComponent.jsx";
 import Axios from "axios";
 import styled from "styled-components";
-
-const ip = "http://192.168.2.7:3001/";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+const ip = "http://192.168.1.3:3001/";
 
 export const AdminPanel = () => {
   // eslint-disable-next-line
@@ -87,6 +88,12 @@ export const AdminPanel = () => {
       setvisitCountPerDay(response.data);
     });
   };
+  const [date, setDate] = useState(new Date());
+  const handleChange = (date) => {
+    setDate(date);
+    getVisitCountPerDay("month", date);
+    getVisitByCasesCountPerDay("month", date);
+  };
 
   useEffect(() => {
     getTotalVisits();
@@ -94,8 +101,6 @@ export const AdminPanel = () => {
     getTotalVisitsByCases();
     getTypeScores();
     getTypeScoresByCases();
-    getVisitCountPerDay("month", "2022-09-1");
-    getVisitByCasesCountPerDay("month", "2022-09-1");
   }, []);
 
   return (
@@ -127,7 +132,6 @@ export const AdminPanel = () => {
             typeScoresByCases={typeScoresByCases}
           ></StatsComponents>
         )}
-
         {chartsVisible && (
           <ChartsComponent
             visitByCasesCountPerDay={visitByCasesCountPerDay}
@@ -148,6 +152,7 @@ export const AdminPanel = () => {
             }}
           ></NavButton>
         </Navigation>
+        <DatePicker selected={date} onChange={handleChange} />;
       </StatsWrapper>
     </AdminPageContainer>
   );
