@@ -12,15 +12,15 @@ const ip = "http://192.168.2.7:3001/";
 export const MapPage = () => {
   const [loggedInUser, setloggedInUser] = useState({});
   const [selectedPOI, setselectedPOI] = useState({});
-  //    const [selectedType,setselectedType] =useState({});
+  const [selectedType, setselectedType] = useState([]);
   // eslint-disable-next-line
   const [selectedLocation, setselectedLocation] = useState({});
-  const [locationData, setlocationData] = useState({});
+  const [locationData, setlocationData] = useState([]);
   const [gotCovid, setgotCovid] = useState(false);
   const [possibleCovid, setpossibleCovid] = useState(false);
 
   //get current date for testing
-  let currentDate = new Date().toJSON().slice(0, 10);
+  //let currentDate = new Date().toJSON().slice(0, 10);
 
   let navigate = useNavigate();
 
@@ -94,9 +94,10 @@ export const MapPage = () => {
         placeholder="Search"
         data={locationData}
         setselectedPOI={setselectedPOI}
+        setselectedType={setselectedType}
       ></SearchBar>
 
-      <CovidMap selectedPOI={selectedPOI} />
+      <CovidMap selectedPOI={selectedPOI} selectedType={selectedType} />
       {!gotCovid && (
         <GotCovidButton
           onClick={() => {
@@ -110,7 +111,7 @@ export const MapPage = () => {
       {possibleCovid && <CovidAlert></CovidAlert>}
     </MapPageContainer>
   );
-};
+};;
 
 const HeadBar = styled.div`
   width: 100%;

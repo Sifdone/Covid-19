@@ -7,7 +7,6 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
   const [resultsHasFocus, setresultsHasFocus] = useState(true);
   const [focus, setFocus] = useState(false);
   const [filterData, setFilterData] = useState([]);
-  // eslint-disable-next-line
   const [types, setTypes] = useState([]);
   const [filterType, setFilterType] = useState([]);
 
@@ -24,7 +23,11 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
     } else if (resultsHasFocus && !searchHasFocus) {
       setFocus(true);
     }
-  }, [searchHasFocus, resultsHasFocus]);
+  }, [searchHasFocus, resultsHasFocus, data]);
+
+  useEffect(() => {
+    getLocationTypes(data);
+  }, [data]);
 
   const handleSearchFocus = () => {
     setsearchHasFocus(true);
@@ -40,8 +43,19 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
   const handleResultBlur = () => {
     setresultsHasFocus(false);
   };
-  /*
-  function getLocationTypes(data) {
+
+  const setTypeData = (type) => {
+    let filterByType = [];
+    data.forEach((poi) => {
+      if (poi.types.includes(type) === true) {
+        filterByType.push(poi);
+      }
+    });
+
+    setselectedType(filterByType);
+  };
+
+  function getLocationTypes() {
     let locationTypes = [];
     data.forEach((poi) => {
       poi.types.forEach((type) => {
@@ -50,8 +64,8 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
         }
       });
     });
-    return locationTypes;
-  } */
+    setTypes(locationTypes);
+  }
 
   /* const filterByType = (type,data) => {
         newFilterByType = 
@@ -104,7 +118,8 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
             return (
               <POI
                 onClick={() => {
-                  setselectedType(type);
+                  handleResultBlur();
+                  setTypeData(type);
                 }}
               >
                 See all in category: {type}
@@ -118,6 +133,7 @@ function SearchBar({ placeholder, data, setselectedPOI, setselectedType }) {
                 onClick={() => {
                   handleResultBlur();
                   setselectedPOI(poi);
+                  setTypeData("");
                 }}
               >
                 {poi.name}

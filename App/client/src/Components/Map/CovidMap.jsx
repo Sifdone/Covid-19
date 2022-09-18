@@ -293,6 +293,98 @@ const CovidMap = ({ selectedPOI, selectedType }) => {
             </Popup>
           </Marker>
         )}
+        {true &&
+          selectedType.map((poi) => {
+            return (
+              <Marker
+                key={poi.id}
+                position={[poi.coordinates.lat, poi.coordinates.lng]}
+                icon={determineIcon(getPopularity(poi, 0))}
+              >
+                <Popup>
+                  <PopUpContainer>
+                    <TitleText>{poi.name}</TitleText>
+
+                    {!registerAttempt && <h4>Popularity</h4>}
+
+                    {!registerAttempt && (
+                      <Popularity>
+                        <TimeDiv>
+                          <h4>{getTime(0)}:00</h4>
+                        </TimeDiv>
+                        <PopDiv>
+                          <img
+                            src={getPopularityGraph(getPopularity(poi, 0))}
+                            alt="text"
+                          ></img>
+                        </PopDiv>
+                      </Popularity>
+                    )}
+                    {!registerAttempt && (
+                      <Popularity>
+                        <TimeDiv>
+                          <h4>{getTime(1)}:00</h4>
+                        </TimeDiv>
+                        <PopDiv>
+                          <img
+                            src={getPopularityGraph(getPopularity(poi, 1))}
+                            alt="text"
+                          ></img>
+                        </PopDiv>
+                      </Popularity>
+                    )}
+                    {!registerAttempt && (
+                      <Popularity>
+                        <TimeDiv>
+                          <h4>{getTime(2)}:00</h4>
+                        </TimeDiv>
+                        <PopDiv>
+                          <img
+                            src={getPopularityGraph(getPopularity(poi, 2))}
+                            alt="text"
+                          ></img>
+                        </PopDiv>
+                      </Popularity>
+                    )}
+                    {!registerAttempt && (
+                      <LiveDiv>
+                        <Live>
+                          <LiveText>LIVE</LiveText>
+                        </Live>
+                        <h5>A little busy</h5>
+                      </LiveDiv>
+                    )}
+                    {isNearEnough(poi) && !registerAttempt && (
+                      <HereButton onClick={(e) => handleHereClick(poi)}>
+                        I am here!
+                      </HereButton>
+                    )}
+                    {registerAttempt && (
+                      <Estimate>
+                        <h4>How many people are approximately on location?</h4>
+                        <NumberInput
+                          setBusyness={setBusynessValue}
+                        ></NumberInput>
+
+                        <HereButton
+                          onClick={(e) => handleSubmitClick(busynessValue, poi)}
+                        >
+                          Submit
+                        </HereButton>
+                        <Confirm>
+                          <h6>
+                            By clicking submit you agree to your current visit
+                            being recorded
+                          </h6>
+                        </Confirm>
+                      </Estimate>
+                    )}
+                  </PopUpContainer>
+                </Popup>
+              </Marker>
+            );
+          })}
+        )
       </Map>
 
       <h1>{currentPOI.name && currentPOI.name}</h1>

@@ -18,3 +18,4 @@ const NumberText = styled.h1`
   @media only screen and (max-width: 500px) {
   }
 `;
+
