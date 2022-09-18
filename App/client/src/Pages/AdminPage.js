@@ -57,14 +57,14 @@ export const AdminPanel = () => {
   const getTypeScores = () => {
     Axios.get(ip.concat("getTypeScores")).then((response) => {
       settypeScores(response.data);
-      console.log(response.data);
+      //console.log(response.data);
     });
   };
 
   const getTypeScoresByCases = () => {
     Axios.get(ip.concat("getTypeScoresByCases")).then((response) => {
       settypeScoresByCases(response.data);
-      console.log(response.data);
+      //console.log(response.data);
     });
   };
 
@@ -82,6 +82,7 @@ export const AdminPanel = () => {
       interval: interval,
       date: date,
     }).then((response) => {
+      console.log(response);
       setvisitCountPerDay(response.data);
     });
   };
@@ -92,7 +93,7 @@ export const AdminPanel = () => {
     getTotalVisitsByCases();
     getTypeScores();
     getTypeScoresByCases();
-    getVisitCountPerDay("week", "2022-09-13");
+    getVisitCountPerDay("month", "2022-09-13");
     getVisitByCasesCountPerDay("week", "2022-09-13");
   }, []);
 
@@ -136,11 +137,13 @@ export const AdminPanel = () => {
           <NavButton
             onClick={() => {
               setstatsVisible(true);
+              setchartsVisible(false);
             }}
           ></NavButton>
           <NavButton
             onClick={() => {
               setstatsVisible(false);
+              setchartsVisible(true);
             }}
           ></NavButton>
         </Navigation>

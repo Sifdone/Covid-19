@@ -639,9 +639,9 @@ app.post("/getVisitByCasesCountPerDay", (req, res) => {
       [interval],
       (err, result) => {
         if (err) {
-          console.log(err);
+          res.send(err);
         } else {
-          console.log(result);
+          res.send(result);
         }
       }
     );
@@ -652,9 +652,9 @@ app.post("/getVisitByCasesCountPerDay", (req, res) => {
       [date],
       (err, result) => {
         if (err) {
-          console.log(err);
+          res.send(err);
         } else {
-          console.log(result);
+          res.send(result);
         }
       }
     );
@@ -668,9 +668,9 @@ function getVisitByCasesCountPerDay(interval, date) {
       [interval],
       (err, result) => {
         if (err) {
-          console.log(err);
+          res.send(err);
         } else {
-          console.log(result);
+          res.send(result);
         }
       }
     );
@@ -681,9 +681,9 @@ function getVisitByCasesCountPerDay(interval, date) {
       [date],
       (err, result) => {
         if (err) {
-          console.log(err);
+          res.send(err);
         } else {
-          console.log(result);
+          res.send(result);
         }
       }
     );
