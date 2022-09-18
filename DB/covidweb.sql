@@ -1,13 +1,14 @@
 -- phpMyAdmin SQL Dump
--- version 5.0.3
+-- version 4.9.1
 -- https://www.phpmyadmin.net/
 --
--- Host: 127.0.0.1
--- Generation Time: Sep 14, 2022 at 06:27 PM
--- Server version: 8.0.30
--- PHP Version: 7.4.11
+-- Φιλοξενητής: 127.0.0.1
+-- Χρόνος δημιουργίας: 18 Σεπ 2022 στις 21:07:00
+-- Έκδοση διακομιστή: 10.4.8-MariaDB
+-- Έκδοση PHP: 7.3.11
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
 SET time_zone = "+00:00";
 
@@ -18,24 +19,24 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Database: `covidweb`
+-- Βάση δεδομένων: `covidweb`
 --
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `admin`
+-- Δομή πίνακα για τον πίνακα `admin`
 --
 
 CREATE TABLE `admin` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `admin`
+-- Άδειασμα δεδομένων του πίνακα `admin`
 --
 
 INSERT INTO `admin` (`id`, `name`, `username`, `password`) VALUES
@@ -45,17 +46,17 @@ INSERT INTO `admin` (`id`, `name`, `username`, `password`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `busyness`
+-- Δομή πίνακα για τον πίνακα `busyness`
 --
 
 CREATE TABLE `busyness` (
   `LOCATION_ID` varchar(256) NOT NULL,
-  `BUSYNESS` int NOT NULL,
-  `timestamp` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `BUSYNESS` int(11) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `busyness`
+-- Άδειασμα δεδομένων του πίνακα `busyness`
 --
 
 INSERT INTO `busyness` (`LOCATION_ID`, `BUSYNESS`, `timestamp`) VALUES
@@ -88,16 +89,16 @@ INSERT INTO `busyness` (`LOCATION_ID`, `BUSYNESS`, `timestamp`) VALUES
 -- --------------------------------------------------------
 
 --
--- Table structure for table `cases`
+-- Δομή πίνακα για τον πίνακα `cases`
 --
 
 CREATE TABLE `cases` (
-  `USER_ID` int NOT NULL,
+  `USER_ID` int(11) NOT NULL,
   `DATE_RECORDED` datetime DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `cases`
+-- Άδειασμα δεδομένων του πίνακα `cases`
 --
 
 INSERT INTO `cases` (`USER_ID`, `DATE_RECORDED`) VALUES
@@ -118,37 +119,43 @@ INSERT INTO `cases` (`USER_ID`, `DATE_RECORDED`) VALUES
 (20, '2022-09-12 00:00:00'),
 (20, '2022-09-12 00:00:00'),
 (20, '2022-09-12 00:00:00'),
-(20, '2022-09-12 00:00:00');
+(20, '2022-09-12 00:00:00'),
+(12, NULL),
+(7, NULL),
+(14, '2022-09-18 00:00:00'),
+(4, '2022-09-18 00:00:00'),
+(8, '2022-09-18 00:00:00'),
+(2, '2022-09-18 00:00:00'),
+(13, '2022-09-18 00:00:00'),
+(10, '2022-09-18 00:00:00');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `estimates`
+-- Δομή πίνακα για τον πίνακα `estimates`
 --
 
 CREATE TABLE `estimates` (
   `LOCATION_KEY` varchar(255) NOT NULL,
-  `POPULARITY` int NOT NULL,
-  `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `POPULARITY` int(11) NOT NULL,
+  `TIMESTAMP` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `locations`
+-- Δομή πίνακα για τον πίνακα `locations`
 --
 
 CREATE TABLE `locations` (
   `ID` varchar(256) NOT NULL,
   `NAME` varchar(256) NOT NULL,
   `ADDRESS` varchar(255) DEFAULT NULL,
-  `populartimes` json DEFAULT NULL,
-  `coordinates` json DEFAULT NULL,
-  `types` json DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `populartimes` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL
+) ;
 
 --
--- Dumping data for table `locations`
+-- Άδειασμα δεδομένων του πίνακα `locations`
 --
 
 INSERT INTO `locations` (`ID`, `NAME`, `ADDRESS`, `populartimes`, `coordinates`, `types`) VALUES
@@ -163,8 +170,8 @@ INSERT INTO `locations` (`ID`, `NAME`, `ADDRESS`, `populartimes`, `coordinates`,
 ('ChIJLTINd7ZJXhMRR5fJxLzysh0', 'Metcon 039', 'Nea Ethniki Odos Patron - Athinon 39, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 12, 10, 13, 26, 40, 50, 52, 59, 82, 100, 81, 41, 0], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 8, 12, 21, 33, 39, 39, 45, 67, 84, 69, 34, 0], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 17, 17, 13, 19, 31, 39, 40, 43, 59, 77, 76, 52, 0], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 9, 9, 9, 13, 18, 21, 22, 39, 72, 91, 69, 32, 0], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 10, 11, 12, 17, 24, 27, 24, 32, 66, 92, 67, 25, 0], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 16, 46, 39, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 30, 22, 0, 0, 0], \"name\": \"Sunday\"}]', '{\"lat\": 38.2645408, \"lng\": 21.7521171}', '[\"gym\", \"health\", \"point_of_interest\", \"establishment\"]'),
 ('ChIJN3zDQI9JXhMRPtX4IsNaXZ8', 'Pediatrician ARGYRO LIOLIOU', 'Panepistimiou 168, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 36, 46, 44, 27, 0, 0, 0, 76, 100, 78, 40, 0, 0, 0], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 17, 36, 48, 36, 0, 0, 0, 59, 74, 68, 42, 0, 0, 0], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 12, 21, 42, 55, 38, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 19, 40, 40, 21, 0, 0, 0, 61, 65, 65, 48, 0, 0, 0], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 14, 21, 21, 12, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Sunday\"}]', '{\"lat\": 38.2639988, \"lng\": 21.7543154}', '[\"doctor\", \"health\", \"point_of_interest\", \"establishment\"]'),
 ('ChIJnYcKTPZJXhMRr62-I_53jkk', 'Proaúlio', 'Notara 32, Patra', '[{\"data\": [17, 10, 0, 0, 0, 0, 0, 9, 14, 23, 30, 34, 34, 30, 27, 27, 34, 44, 54, 61, 62, 59, 52, 44], \"name\": \"Monday\"}, {\"data\": [35, 26, 0, 0, 0, 0, 0, 15, 23, 33, 42, 46, 44, 39, 37, 38, 45, 54, 63, 69, 70, 66, 59, 49], \"name\": \"Tuesday\"}, {\"data\": [37, 28, 0, 0, 0, 0, 0, 28, 37, 49, 57, 58, 52, 44, 40, 46, 59, 76, 90, 97, 93, 81, 62, 44], \"name\": \"Wednesday\"}, {\"data\": [28, 17, 0, 0, 0, 0, 0, 19, 28, 44, 61, 70, 64, 49, 32, 25, 29, 46, 70, 91, 100, 92, 72, 49], \"name\": \"Thursday\"}, {\"data\": [29, 17, 0, 0, 0, 0, 0, 22, 29, 35, 38, 38, 36, 34, 34, 37, 47, 59, 71, 79, 82, 78, 68, 54], \"name\": \"Friday\"}, {\"data\": [40, 27, 0, 0, 0, 0, 0, 15, 34, 60, 82, 88, 75, 50, 29, 22, 27, 45, 66, 84, 87, 77, 58, 37], \"name\": \"Saturday\"}, {\"data\": [24, 14, 0, 0, 0, 0, 0, 7, 14, 32, 60, 77, 70, 46, 28, 28, 41, 61, 80, 89, 86, 70, 49, 30], \"name\": \"Sunday\"}]', '{\"lat\": 38.2643078, \"lng\": 21.7453617}', '[\"cafe\", \"bar\", \"restaurant\", \"food\", \"point_of_interest\", \"store\", \"establishment\"]'),
-('ChIJQ_ezeI9JXhMRRS4WbeyX-M8', 'ΗΛΙΑΣ & ΑΝΔΡΕΑΣ ΖΗΣΙΜΟΠΟΥΛΟΣ Ο.Ε.', 'Nea Ethniki Odos Patron - Athinon 41, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 22, 33, 50, 61, 72, 72, 50, 22, 5, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 16, 33, 44, 50, 38, 33, 50, 44, 11, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 83, 88, 44, 66, 61, 50, 55, 61, 38, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 11, 38, 61, 44, 44, 44, 44, 33, 16, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 11, 44, 100, 100, 66, 50, 38, 22, 5, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 16, 38, 50, 61, 66, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Sunday\"}]', '{\"lat\": 38.2651496, \"lng\": 21.7525917}', '[\"store\", \"point_of_interest\", \"establishment\"]'),
 ('ChIJQQ--SyhJXhMRGmywk1Q8_zM', 'auto belexas', 'ΝΕΑ ΕΘΝΙΚΗ ΟΔΟ, Nea Ethniki Odos Patron - Athinon 35, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 73, 55, 61, 73, 64, 41, 20, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 58, 64, 67, 52, 29, 11, 2, 0, 64, 91, 2, 0, 0, 0], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 70, 91, 85, 91, 88, 58, 26, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 67, 76, 79, 97, 91, 52, 20, 14, 38, 64, 47, 14, 0, 0, 0], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 85, 100, 94, 61, 23, 5, 2, 14, 32, 41, 26, 0, 0, 0], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 70, 91, 85, 52, 23, 5, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Sunday\"}]', '{\"lat\": 38.2644077, \"lng\": 21.7519934}', '[\"car_dealer\", \"point_of_interest\", \"store\", \"establishment\"]'),
+('ChIJQ_ezeI9JXhMRRS4WbeyX-M8', 'ΗΛΙΑΣ & ΑΝΔΡΕΑΣ ΖΗΣΙΜΟΠΟΥΛΟΣ Ο.Ε.', 'Nea Ethniki Odos Patron - Athinon 41, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 22, 33, 50, 61, 72, 72, 50, 22, 5, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 16, 33, 44, 50, 38, 33, 50, 44, 11, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 83, 88, 44, 66, 61, 50, 55, 61, 38, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 11, 38, 61, 44, 44, 44, 44, 33, 16, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 11, 44, 100, 100, 66, 50, 38, 22, 5, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 16, 38, 50, 61, 66, 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Sunday\"}]', '{\"lat\": 38.2651496, \"lng\": 21.7525917}', '[\"store\", \"point_of_interest\", \"establishment\"]'),
 ('ChIJwavW8JBJXhMRj9HvUUVbQzU', 'Zacherino', 'Notara 42, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 6, 10, 17, 26, 35, 39, 38, 33, 26, 21, 24, 28, 28, 21, 11, 5, 2], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 4, 6, 11, 20, 32, 39, 37, 27, 18, 20, 36, 57, 59, 38, 17, 6, 3], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 9, 17, 27, 40, 50, 55, 54, 45, 36, 30, 29, 31, 32, 29, 23, 14, 7], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 8, 13, 21, 30, 39, 44, 45, 41, 34, 27, 23, 27, 35, 36, 28, 16, 6], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 5, 13, 20, 25, 35, 46, 45, 34, 30, 36, 45, 49, 45, 35, 23, 13, 6], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 11, 27, 54, 82, 100, 95, 73, 47, 30, 24, 27, 32, 34, 30, 22, 15, 9], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 3, 7, 11, 17, 23, 27, 29, 30, 30, 29, 28, 27, 26, 22, 18, 13, 9], \"name\": \"Sunday\"}]', '{\"lat\": 38.2647829, \"lng\": 21.7461253}', '[\"food\", \"point_of_interest\", \"store\", \"establishment\"]'),
 ('ChIJWZiFJhA2XhMRCplj2lQ8oA8', 'DIAMOND CARS ΟΕ', 'Nea Ethniki Odos Patron - Athinon 41, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 61, 88, 61, 94, 100, 50, 11, 5, 27, 72, 77, 27, 5, 0, 0], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 50, 55, 50, 44, 0, 0, 0, 16, 38, 55, 38, 0, 0, 0], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 72, 77, 83, 77, 50, 22, 22, 38, 55, 44, 16, 5, 0, 0], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 50, 61, 77, 94, 0, 0, 0, 38, 50, 44, 27, 0, 0, 0], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 55, 77, 72, 44, 0, 0, 0, 22, 38, 38, 16, 0, 0, 0], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Sunday\"}]', '{\"lat\": 38.2651496, \"lng\": 21.7525917}', '[\"car_dealer\", \"point_of_interest\", \"store\", \"establishment\"]'),
 ('ChIJX6AJbHJJXhMRqardzwDYNhk', 'lma service', 'Tirteou 29, Patra', '[{\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 22, 44, 66, 81, 74, 51, 33, 25, 25, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Monday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 18, 70, 18, 33, 37, 29, 14, 7, 7, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Tuesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 29, 44, 59, 70, 66, 55, 40, 25, 14, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Wednesday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 40, 70, 85, 85, 77, 74, 66, 55, 37, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Thursday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 29, 66, 85, 51, 25, 40, 59, 33, 11, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Friday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 18, 33, 40, 81, 100, 62, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Saturday\"}, {\"data\": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], \"name\": \"Sunday\"}]', '{\"lat\": 38.2641457, \"lng\": 21.7512355}', '[\"car_repair\", \"point_of_interest\", \"establishment\"]');
@@ -172,17 +179,17 @@ INSERT INTO `locations` (`ID`, `NAME`, `ADDRESS`, `populartimes`, `coordinates`,
 -- --------------------------------------------------------
 
 --
--- Table structure for table `possibleinteractions`
+-- Δομή πίνακα για τον πίνακα `possibleinteractions`
 --
 
 CREATE TABLE `possibleinteractions` (
-  `USER_ID` int NOT NULL,
-  `LOCATION_ID` varchar(255) COLLATE utf8mb4_general_ci NOT NULL,
+  `USER_ID` int(11) NOT NULL,
+  `LOCATION_ID` varchar(255) NOT NULL,
   `DATE_OF_VISIT` date NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
--- Dumping data for table `possibleinteractions`
+-- Άδειασμα δεδομένων του πίνακα `possibleinteractions`
 --
 
 INSERT INTO `possibleinteractions` (`USER_ID`, `LOCATION_ID`, `DATE_OF_VISIT`) VALUES
@@ -192,18 +199,18 @@ INSERT INTO `possibleinteractions` (`USER_ID`, `LOCATION_ID`, `DATE_OF_VISIT`) V
 -- --------------------------------------------------------
 
 --
--- Table structure for table `users`
+-- Δομή πίνακα για τον πίνακα `users`
 --
 
 CREATE TABLE `users` (
-  `id` int NOT NULL,
+  `id` int(11) NOT NULL,
   `name` varchar(255) DEFAULT NULL,
   `username` varchar(255) NOT NULL,
   `password` varchar(255) NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `users`
+-- Άδειασμα δεδομένων του πίνακα `users`
 --
 
 INSERT INTO `users` (`id`, `name`, `username`, `password`) VALUES
@@ -229,23 +236,25 @@ INSERT INTO `users` (`id`, `name`, `username`, `password`) VALUES
 (20, NULL, 't2@gmail.com', '$2b$10$8wWfCPUAgG3CooR0KR2EneqPdDqQEpIpSj831KN4F0h2o69E/v/wq'),
 (25, NULL, 'cup@gmail.com', '$2a$10$h0pD2L6aruzpXh9SKCLzf.3TmuN68K2P4wZsOtijCBQmxU/6NeoZi'),
 (26, NULL, 'sun@gmail.com', '$2a$10$.vLQLP9ooh5ejIiNAENS3e7.KWduc4QmUgF1vBQ9GLlf9uv9y3RDy'),
-(27, NULL, 'ka@gmail.com', '$2a$10$hs2CFVnZUKwZ5mNoBPe3ve95kfR/QtEcv.9Hk7BLqKnEBhdiS6niC');
+(27, NULL, 'ka@gmail.com', '$2a$10$hs2CFVnZUKwZ5mNoBPe3ve95kfR/QtEcv.9Hk7BLqKnEBhdiS6niC'),
+(28, NULL, 'reribrag@gmail.com', '$2a$10$lY6lBhe2jr2RppazRc/gXuJIb8mT4N3d9L8QAZI0e/13XSsd8Duo.'),
+(29, NULL, 'sokwim@gmail.com', '$2a$10$z9T8awVKZebyRqRrlwTW/ek1udFTXZsHmBCBqqvdSRcyQhIpSFR7q');
 
 -- --------------------------------------------------------
 
 --
--- Table structure for table `visits`
+-- Δομή πίνακα για τον πίνακα `visits`
 --
 
 CREATE TABLE `visits` (
-  `VISIT_ID` int NOT NULL,
-  `USER_ID` int NOT NULL,
+  `VISIT_ID` int(11) NOT NULL,
+  `USER_ID` int(11) NOT NULL,
   `LOCATION_ID` varchar(255) NOT NULL,
-  `TIMESTAMP` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+  `TIMESTAMP` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `visits`
+-- Άδειασμα δεδομένων του πίνακα `visits`
 --
 
 INSERT INTO `visits` (`VISIT_ID`, `USER_ID`, `LOCATION_ID`, `TIMESTAMP`) VALUES
@@ -259,84 +268,102 @@ INSERT INTO `visits` (`VISIT_ID`, `USER_ID`, `LOCATION_ID`, `TIMESTAMP`) VALUES
 (11, 15, 'ChIJk29PI5FJXhMRj16S74PXEL8', '2022-09-13 13:45:12'),
 (12, 17, 'ChIJX6AJbHJJXhMRqardzwDYNhk', '2022-09-13 13:45:14'),
 (13, 15, 'ChIJnYcKTPZJXhMRr62-I_53jkk', '2022-09-13 13:45:16'),
-(14, 17, 'ChIJQ_ezeI9JXhMRRS4WbeyX-M8', '2022-09-13 13:45:24');
+(14, 17, 'ChIJQ_ezeI9JXhMRRS4WbeyX-M8', '2022-09-13 13:45:24'),
+(15, 2, 'ChIJKfCLf49JXhMRJ1MiuiTdMdI', '2022-09-18 16:17:18'),
+(16, 7, 'ChIJN3zDQI9JXhMRPtX4IsNaXZ8', '2022-09-18 16:17:24'),
+(17, 9, 'ChIJWZiFJhA2XhMRCplj2lQ8oA8', '2022-02-18 11:51:36'),
+(18, 14, 'ChIJQ_ezeI9JXhMRRS4WbeyX-M8', '2022-08-24 18:45:34'),
+(19, 3, 'ChIJnYcKTPZJXhMRr62-I_53jkk', '2022-03-05 19:08:09'),
+(20, 6, 'ChIJk29PI5FJXhMRj16S74PXEL8', '2022-01-06 02:37:24'),
+(21, 7, 'ChIJLTINd7ZJXhMRR5fJxLzysh0', '2022-07-02 04:07:31'),
+(22, 5, 'ChIJKfCLf49JXhMRJ1MiuiTdMdI', '2022-01-22 12:44:03'),
+(23, 7, 'ChIJKfCLf49JXhMRJ1MiuiTdMdI', '2022-06-29 07:06:30'),
+(24, 2, 'ChIJ4801M5BJXhMRVDTFNJRwztE', '2022-06-27 22:55:45'),
+(25, 12, 'ChIJk29PI5FJXhMRj16S74PXEL8', '2022-01-13 13:03:35'),
+(26, 5, 'ChIJQ_ezeI9JXhMRRS4WbeyX-M8', '2022-01-08 01:40:31'),
+(27, 18, 'ChIJFU5w76pJXhMRN3QUqgeJI2c', '2022-08-02 05:52:05'),
+(28, 18, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-03-23 12:39:41'),
+(29, 11, 'ChIJKfCLf49JXhMRJ1MiuiTdMdI', '2022-01-23 23:00:46'),
+(30, 13, 'ChIJLTINd7ZJXhMRR5fJxLzysh0', '2022-03-26 17:42:30'),
+(31, 2, 'ChIJEyYBg5lJXhMR6BjkCsAVLqQ', '2022-09-14 01:33:15'),
+(32, 10, 'ChIJN3zDQI9JXhMRPtX4IsNaXZ8', '2022-01-04 17:49:08'),
+(33, 4, 'ChIJebC_45BJXhMRZmLKwgG5gaQ', '2022-01-18 11:21:05'),
+(34, 2, 'ChIJnYcKTPZJXhMRr62-I_53jkk', '2022-08-31 16:13:05'),
+(35, 18, 'ChIJwavW8JBJXhMRj9HvUUVbQzU', '2022-01-26 08:12:41'),
+(36, 7, 'ChIJX6AJbHJJXhMRqardzwDYNhk', '2022-05-05 19:38:49'),
+(37, 3, 'ChIJc6nu-pBJXhMR8kfqruS6HhY', '2022-03-01 15:53:59'),
+(38, 2, 'ChIJX6AJbHJJXhMRqardzwDYNhk', '2022-09-14 05:04:14');
 
 --
--- Indexes for dumped tables
+-- Ευρετήρια για άχρηστους πίνακες
 --
 
 --
--- Indexes for table `admin`
+-- Ευρετήρια για πίνακα `admin`
 --
 ALTER TABLE `admin`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `username` (`username`);
 
 --
--- Indexes for table `busyness`
+-- Ευρετήρια για πίνακα `busyness`
 --
 ALTER TABLE `busyness`
   ADD PRIMARY KEY (`LOCATION_ID`,`timestamp`);
 
 --
--- Indexes for table `cases`
+-- Ευρετήρια για πίνακα `cases`
 --
 ALTER TABLE `cases`
   ADD KEY `USER_ID` (`USER_ID`);
 
 --
--- Indexes for table `locations`
---
-ALTER TABLE `locations`
-  ADD PRIMARY KEY (`ID`);
-
---
--- Indexes for table `users`
+-- Ευρετήρια για πίνακα `users`
 --
 ALTER TABLE `users`
   ADD PRIMARY KEY (`id`);
 
 --
--- Indexes for table `visits`
+-- Ευρετήρια για πίνακα `visits`
 --
 ALTER TABLE `visits`
   ADD PRIMARY KEY (`VISIT_ID`),
   ADD KEY `user_id` (`USER_ID`);
 
 --
--- AUTO_INCREMENT for dumped tables
+-- AUTO_INCREMENT για άχρηστους πίνακες
 --
 
 --
--- AUTO_INCREMENT for table `admin`
+-- AUTO_INCREMENT για πίνακα `admin`
 --
 ALTER TABLE `admin`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
 
 --
--- AUTO_INCREMENT for table `users`
+-- AUTO_INCREMENT για πίνακα `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
--- AUTO_INCREMENT for table `visits`
+-- AUTO_INCREMENT για πίνακα `visits`
 --
 ALTER TABLE `visits`
-  MODIFY `VISIT_ID` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `VISIT_ID` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
 
 --
--- Constraints for dumped tables
+-- Περιορισμοί για άχρηστους πίνακες
 --
 
 --
--- Constraints for table `cases`
+-- Περιορισμοί για πίνακα `cases`
 --
 ALTER TABLE `cases`
   ADD CONSTRAINT `cases_ibfk_1` FOREIGN KEY (`USER_ID`) REFERENCES `users` (`id`);
 
 --
--- Constraints for table `visits`
+-- Περιορισμοί για πίνακα `visits`
 --
 ALTER TABLE `visits`
   ADD CONSTRAINT `user_id` FOREIGN KEY (`USER_ID`) REFERENCES `users` (`id`);
