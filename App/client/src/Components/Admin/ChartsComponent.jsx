@@ -114,7 +114,7 @@ export const LineChartsComponent = ({
 
 // eslint-disable-next-line
 const StatsWrapper = styled.div`
-  height: 100%;
+  height: 20em;
   width: 100%;
   background-color: white;
   display: flex;
