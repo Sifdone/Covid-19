@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-const networkAdress = "http://192.168.1.3:3000";
+const networkAdress = "http://192.168.2.7:3000";
 const saltRounds = 10; //Hashing
 
 app.use(express.json());
@@ -61,7 +61,6 @@ app.post("/uploadFileAPI", upload.single("file"), (req, res) => {
   res.send("File Uploaded");
 });
 
-
 //Logout API
 app.get("/logout", (req, res) => {
   if (req.session.user) {
@@ -71,9 +70,6 @@ app.get("/logout", (req, res) => {
     res.send({ loggedIn: false });
   }
 });
-
-
-
 //Login API
 app.get("/login", (req, res) => {
   if (req.session.user) {
@@ -427,7 +423,7 @@ function newCovidCase(user_id, date) {
   //First of all we insert the user that got sick in the cases table
   db.query(
     "INSERT INTO `cases` (USER_ID,DATE_RECORDED) VALUES (?,?)",
-    [user_id, "2022-09-12"],
+    [user_id, date],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -435,7 +431,7 @@ function newCovidCase(user_id, date) {
         db.query(
           // Get the Location_IDs from the places the user visited in the last 7 days
           "SELECT LOCATION_ID,date_format(TIMESTAMP, '%Y-%m-%d %H:%i:%s') as TIMESTAMP FROM visits WHERE TIMESTAMP >= DATE(? - INTERVAL 7 day) AND USER_ID= ?",
-          ["2022-09-12", user_id],
+          [date, user_id],
           (err, result) => {
             if (err) {
               console.log(err);
@@ -503,16 +499,33 @@ app.post("/covid", (req, res) => {
   const user_id = req.body.user_id;
   const date = req.body.date;
   let caseDate = Date.parse(date);
-  db.query("SELECT date_format(DATE_RECORDED, '%Y-%m-%d') as DATE_RECORDED FROM `cases` WHERE USER_ID = ?",
-  [user_id],
-   (err, result) => {
-    if (err) {
-      console.log(err);
-    } else {
-      console.log(result[result.length-1]);
+  db.query(
+    "SELECT date_format(DATE_RECORDED, '%Y-%m-%d') as DATE_RECORDED FROM `cases` WHERE USER_ID = ?",
+    [user_id],
+    (err, result) => {
+      if (err) {
+        console.log(err);
+      } else {
+        let lastCaseDate = Date.parse(result[result.length - 1]);
+        if (lastCaseDate.getMonth < caseDate.getMonth) {
+          if (30 - (lastCaseDate.getDate() - caseDate.getDate() >= 14)) {
+            newCovidCase(user_id, date);
+          } else {
+            console.log("Last Case too recent");
+          }
+        }
+        if (lastCaseDate.getMonth > caseDate.getMonth) {
+          newCovidCase(user_id, date);
+        } else {
+          if (caseDate.getDate() - lastCaseDate.getDate() >= 14) {
+            newCovidCase(user_id, date);
+          } else {
+            console.log("Last Case too recent");
+          }
+        }
+      }
     }
-  });
-  newCovidCase(user_id, date);
+  );
 });
 //
 
@@ -715,5 +728,5 @@ function getVisitByCasesCountPerDay(interval, date) {
 
 app.listen(3001, () => {
   console.log("Server running in port 3001");
-  getVisitCountPerDay("week", "22-9-13");
+  // getVisitCountPerDay("week", "22-9-13");
 });
