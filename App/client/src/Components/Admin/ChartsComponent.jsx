@@ -7,23 +7,39 @@ import Chart from "chart.js/auto";
 export const ChartsComponent = ({
   visitByCasesCountPerDay,
   visitCountPerDay,
-  data = {
-    labels: ["January", "February", "March", "April", "May"],
+}) => {
+  const casesvisits = visitByCasesCountPerDay.map(function (elem) {
+    return elem.visits;
+  });
+  const visits = visitCountPerDay.map(function (elem) {
+    return elem.visits;
+  });
+  const date = visitCountPerDay.map(function (elem) {
+    return elem.date;
+  });
+  const state = {
+    labels: date,
     datasets: [
       {
-        label: "Visits",
+        label: "Cases Visits",
         backgroundColor: "rgba(75,192,192,1)",
         borderColor: "rgba(0,0,0,1)",
         borderWidth: 2,
-        data: visitCountPerDay,
+        data: casesvisits,
+      },
+      {
+        backgroundColor: "rgba(75,192,100,1)",
+        borderColor: "rgba(0,0,0,1)",
+        borderWidth: 2,
+        label: "Total Visits",
+        data: visits,
       },
     ],
-  },
-}) => {
+  };
   return (
     <StatsWrapper>
       <Bar
-        data={data}
+        data={state}
         options={{
           title: {
             display: true,
