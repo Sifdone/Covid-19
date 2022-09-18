@@ -484,6 +484,23 @@ function getPossibleInteractions(locationId, datetime, user_id) {
   );
 }
 
+app.post("/covidCheck", (req, res) => {
+  const user_id = req.body.user_id;
+  db.query(
+    "SELECT * FROM possibleinteractions WHERE USER_ID = ?",
+    [user_id],
+    (err, result) => {
+      if (err) {
+        res.send(err);
+      } else {
+        console.log("check");
+        res.send(result);
+      }
+    }
+  );
+});
+
+
 //ενα fun που θα παιρνει ολα τα visits που εκανε τις τελευταιες 7 μερες αυτος που δηλωσε
 //και τρεξε για το καθε visit το get possible case, μαζεψε ολους του χρηστες και βαλτους σε ενα table possiblecases
 //οταν συνδεεσαι θα ελεγχει αν ειναι σε αυτο το table
