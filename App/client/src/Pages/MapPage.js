@@ -4,6 +4,7 @@ import {useNavigate} from "react-router";
 import { useState, useEffect } from 'react';
 import Axios from 'axios';
 import SearchBar from "../Components/SearchBar";
+import DateSelector from "../Components/DateSelector";
 //import TestData from '../data/starting_pois_test3.json'
 
 const ip = "http://192.168.2.7:3001/";
@@ -15,6 +16,8 @@ export const MapPage = () => {
   // eslint-disable-next-line
   const [selectedLocation, setselectedLocation] = useState({});
   const [locationData, setlocationData] = useState({});
+  const [gotCovid, setgotCovid] = useState(false);
+  const [possibleCovid, setpossibleCovid] = useState(false);
 
   //get current date for testing
   let currentDate = new Date().toJSON().slice(0, 10);
@@ -36,6 +39,17 @@ export const MapPage = () => {
     });
   };
 
+  const covidCheck = (user) => {
+    Axios.post(ip.concat("covidCheck"), {
+      user_id: user,
+    }).then((response) => {
+      console.log(response.data.length);
+      if (!response.data.length === 0) {
+        setpossibleCovid(true);
+      }
+    });
+  };
+
   const registerCase = (date) => {
     Axios.post(ip.concat("covid"), {
       user_id: loggedInUser.id,
@@ -54,6 +68,7 @@ export const MapPage = () => {
         console.log("logged in");
         setloggedInUser(response.data.user[0]);
         getPOIs();
+        covidCheck(response.data.user[0].id);
       } else {
         console.log("not logged in");
         navigate("/");
@@ -82,13 +97,17 @@ export const MapPage = () => {
       ></SearchBar>
 
       <CovidMap selectedPOI={selectedPOI} />
-      <GotCovidButton
-        onClick={() => {
-          registerCase(currentDate);
-        }}
-      >
-        I have COVID
-      </GotCovidButton>
+      {!gotCovid && (
+        <GotCovidButton
+          onClick={() => {
+            setgotCovid(true);
+          }}
+        >
+          I have COVID
+        </GotCovidButton>
+      )}
+      {gotCovid && <DateSelector registerCase={registerCase}></DateSelector>}
+      {possibleCovid && <CovidAlert></CovidAlert>}
     </MapPageContainer>
   );
 };
@@ -211,4 +230,21 @@ const GotCovidButton = styled.button`
   &:hover {
     background: linear-gradient(89.81deg, #c2b85c -3.52%, #bdb251 98.63%);
   }
+`;
+
+const CovidAlert = styled.div`
+  z-index: -5;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0 0;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  background-color: red;
+  width: 100vw;
+  height: 100vh;
 `;
