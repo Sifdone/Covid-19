@@ -20,7 +20,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-const networkAdress = "http://192.168.2.7:3000";
+const networkAdress = "http://192.168.1.3:3000";
 const saltRounds = 10; //Hashing
 
 app.use(express.json());
@@ -692,5 +692,5 @@ function getVisitByCasesCountPerDay(interval, date) {
 
 app.listen(3001, () => {
   console.log("Server running in port 3001");
-  // getVisitCountPerDay("week", "22-9-13");
+  getVisitCountPerDay("week", "22-9-13");
 });

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Axios from "axios";
 import styled from "styled-components";
 
-const ip = "http://192.168.2.7:3001/";
+const ip = "http://192.168.1.3:3001/";
 
 export const AdminLogin = () => {
   const [username, setUsername] = useState();
