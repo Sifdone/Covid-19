@@ -498,7 +498,7 @@ app.get("/busys", (req, res) => {
 app.post("/covid", (req, res) => {
   const user_id = req.body.user_id;
   const date = req.body.date;
-  let caseDate = Date.parse(date);
+  let caseDate = new Date(date);
   db.query(
     "SELECT date_format(DATE_RECORDED, '%Y-%m-%d') as DATE_RECORDED FROM `cases` WHERE USER_ID = ?",
     [user_id],
@@ -506,15 +506,15 @@ app.post("/covid", (req, res) => {
       if (err) {
         console.log(err);
       } else {
-        let lastCaseDate = Date.parse(result[result.length - 1]);
-        if (lastCaseDate.getMonth < caseDate.getMonth) {
+        let lastCaseDate = new Date(result[result.length - 1].DATE_RECORDED);
+        if (lastCaseDate.getMonth() < caseDate.getMonth()) {
           if (30 - (lastCaseDate.getDate() - caseDate.getDate() >= 14)) {
             newCovidCase(user_id, date);
           } else {
             console.log("Last Case too recent");
           }
         }
-        if (lastCaseDate.getMonth > caseDate.getMonth) {
+        if (lastCaseDate.getMonth() > caseDate.getMonth()) {
           newCovidCase(user_id, date);
         } else {
           if (caseDate.getDate() - lastCaseDate.getDate() >= 14) {
