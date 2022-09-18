@@ -82,7 +82,7 @@ export const AdminPanel = () => {
       interval: interval,
       date: date,
     }).then((response) => {
-      console.log(response);
+      console.log(response.data);
       setvisitCountPerDay(response.data);
     });
   };
