@@ -23,6 +23,13 @@ export const MapPage = () => {
 
   Axios.defaults.withCredentials = true;
 
+  const logout = () => {
+    Axios.get(ip.concat("logout")).then((response) => {
+      navigate("/");
+      console.log("logged out");
+    });
+  };
+
   const getPOIs = () => {
     Axios.get(ip.concat("pois")).then((response) => {
       setlocationData(response.data);
@@ -49,6 +56,7 @@ export const MapPage = () => {
         getPOIs();
       } else {
         console.log("not logged in");
+        navigate("/");
       }
     });
   }, [navigate]);
@@ -57,9 +65,15 @@ export const MapPage = () => {
     <MapPageContainer>
       <HeadBar>
         <HeaderTextUser>{loggedInUser.username} | </HeaderTextUser>
-        <HeaderTextLogout href="./">Logout</HeaderTextLogout>
+        <HeaderTextSettings href="./settings">Settings</HeaderTextSettings>
         <HeaderTextUser> | </HeaderTextUser>
-        <HeaderTextLogout href="./settings">Settings</HeaderTextLogout>
+        <HeaderTextLogout
+          onClick={() => {
+            logout();
+          }}
+        >
+          Logout
+        </HeaderTextLogout>
       </HeadBar>
       <SearchBar
         placeholder="Search"
@@ -100,7 +114,7 @@ const HeaderTextUser = styled.h5`
   }
 `;
 
-const HeaderTextLogout = styled.a`
+const HeaderTextLogout = styled.button`
   text-decoration: none; /* no underline */
   font-family: Montserrat;
   text-align: center;
@@ -111,6 +125,19 @@ const HeaderTextLogout = styled.a`
   @media only screen and (max-width: 500px) {
   }
 `;
+
+const HeaderTextSettings = styled.a`
+  text-decoration: none; /* no underline */
+  font-family: Montserrat;
+  text-align: center;
+  font-size: 0.9em;
+  letter-spacing: 0.2em;
+  font-weight: bold;
+  color: #35735d;
+  @media only screen and (max-width: 500px) {
+  }
+`;
+
 // eslint-disable-next-line
 const SearchInput = styled.input`
   width: 100%;

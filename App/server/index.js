@@ -61,6 +61,19 @@ app.post("/uploadFileAPI", upload.single("file"), (req, res) => {
   res.send("File Uploaded");
 });
 
+
+//Logout API
+app.get("/logout", (req, res) => {
+  if (req.session.user) {
+    req.session.destroy();
+    res.send({ loggedIn: false });
+  } else {
+    res.send({ loggedIn: false });
+  }
+});
+
+
+
 //Login API
 app.get("/login", (req, res) => {
   if (req.session.user) {
@@ -324,7 +337,7 @@ app.post("/history", (req, res) => {
 app.post("/caseshistory", (req, res) => {
   const user_id = req.body.user_id;
   db.query(
-    "SELECT DATE_RECORDED FROM cases WHERE USER_ID = ?",
+    "SELECT date_format(DATE_RECORDED, '%Y-%m-%d') as DATE_RECORDED FROM cases WHERE USER_ID = ?",
     [user_id],
     (err, result) => {
       if (err) {
@@ -414,7 +427,7 @@ function newCovidCase(user_id, date) {
   //First of all we insert the user that got sick in the cases table
   db.query(
     "INSERT INTO `cases` (USER_ID,DATE_RECORDED) VALUES (?,?)",
-    [user_id, date],
+    [user_id, "2022-09-12"],
     (err, result) => {
       if (err) {
         console.log(err);
@@ -422,7 +435,7 @@ function newCovidCase(user_id, date) {
         db.query(
           // Get the Location_IDs from the places the user visited in the last 7 days
           "SELECT LOCATION_ID,date_format(TIMESTAMP, '%Y-%m-%d %H:%i:%s') as TIMESTAMP FROM visits WHERE TIMESTAMP >= DATE(? - INTERVAL 7 day) AND USER_ID= ?",
-          [date, user_id],
+          ["2022-09-12", user_id],
           (err, result) => {
             if (err) {
               console.log(err);
@@ -489,7 +502,16 @@ app.get("/busys", (req, res) => {
 app.post("/covid", (req, res) => {
   const user_id = req.body.user_id;
   const date = req.body.date;
-  //db.query("UPDATE covid SET hascovid = IF(DATEDIFF(DAY,NOW(),timestamp)>=14,TRUE,FALSE) WHERE userId = (?)",
+  let caseDate = Date.parse(date);
+  db.query("SELECT date_format(DATE_RECORDED, '%Y-%m-%d') as DATE_RECORDED FROM `cases` WHERE USER_ID = ?",
+  [user_id],
+   (err, result) => {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(result[result.length-1]);
+    }
+  });
   newCovidCase(user_id, date);
 });
 //
@@ -605,12 +627,12 @@ app.post("/getVisitCountPerDay", (req, res) => {
   if (interval === "month") {
     db.query(
       "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM visits WHERE MONTH(visits.TIMESTAMP) = MONTH(?) GROUP BY DAY(TIMESTAMP) ",
-      [interval],
+      [date],
       (err, result) => {
         if (err) {
-          console.log(err);
+          res.send(err);
         } else {
-          console.log(result);
+          res.send(result);
         }
       }
     );
@@ -621,9 +643,9 @@ app.post("/getVisitCountPerDay", (req, res) => {
       [date],
       (err, result) => {
         if (err) {
-          console.log(err);
+          res.send(err);
         } else {
-          console.log(result);
+          res.send(result);
         }
       }
     );
@@ -636,11 +658,12 @@ app.post("/getVisitByCasesCountPerDay", (req, res) => {
   if (interval === "month") {
     db.query(
       "SELECT count(*) as visits, date_format(TIMESTAMP, '%Y-%m-%d') as date FROM `visits` INNER JOIN `cases` ON visits.USER_ID = cases.USER_ID INNER JOIN `locations` ON visits.LOCATION_ID = locations.ID  WHERE MONTH(visits.TIMESTAMP) = MONTH(?) GROUP BY DAY(TIMESTAMP) ",
-      [interval],
+      [date],
       (err, result) => {
         if (err) {
           res.send(err);
         } else {
+          console.log(result);
           res.send(result);
         }
       }

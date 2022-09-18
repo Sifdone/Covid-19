@@ -9,8 +9,8 @@ import styled from "styled-components";
 const ip = "http://192.168.2.7:3001/";
 
 export const Login = () => {
-  const [username, setUsername] = useState();
-  const [password, setPassword] = useState();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [loginStatus, setloginStatus] = useState();
 
   Axios.defaults.withCredentials = true;
@@ -87,17 +87,60 @@ export const Register = () => {
     console.log("PASSWORDS DONT MATCH");
     setregistrationError("PASSWORDS DONT MATCH");
   };
+  const passwordsRequirementsNotMet = () => {
+    console.log(
+      "PASSWORD NEEDS TO INCLUDE A CAPITAL LETTER, A NUMBER AND A SYMBOL"
+    );
+    setregistrationError(
+      "PASSWORD NEEDS TO INCLUDE A CAPITAL LETTER, A NUMBER AND A SYMBOL"
+    );
+  };
+
+  const passwordCheck = (pass) => {
+    //length check
+    if (pass.length >= 8) {
+      let capFlag = false;
+      let numFlag = false;
+      let symbolFlag = false;
+      for (let i = 0; i < pass.length; i++) {
+        //Uppercase Check
+        if (
+          pass[i].toLowerCase() !== pass[i] &&
+          pass[i].toUpperCase() === pass[i]
+        ) {
+          capFlag = true;
+        }
+        if (pass[i].toLowerCase() === pass[i].toUpperCase()) {
+          //Number Check
+          if (/\d/.test(pass[i])) {
+            numFlag = true;
+          } else {
+            symbolFlag = true;
+          }
+        }
+      }
+      if (capFlag && numFlag && symbolFlag) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  };
 
   const registerUser = () => {
-    if (password1 === password2) {
-      Axios.post(ip.concat("register"), {
-        username: username,
-        password: password1,
-      }).then(() => {
-        console.log("SUCCESS");
-      });
+    if (passwordCheck(password1)) {
+      if (password1 === password2) {
+        Axios.post(ip.concat("register"), {
+          username: username,
+          password: password1,
+        }).then(() => {
+          console.log("SUCCESS");
+        });
+      } else {
+        passwordsDontMatch();
+      }
     } else {
-      passwordsDontMatch();
+      passwordsRequirementsNotMet();
     }
   };
 
@@ -130,9 +173,7 @@ export const Register = () => {
           }}
         />
         <Button onClick={registerUser}>Register</Button>
-        {registrationError && (
-          <ErrorSign errorText="PASSWORDS DONT MATCH"></ErrorSign>
-        )}
+        {registrationError && <ErrorText>{registrationError}</ErrorText>}
       </Form>
       <SmallHead>
         Already a member? <a href="/">Sign in</a>

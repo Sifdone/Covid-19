@@ -69,10 +69,11 @@ export const AdminPanel = () => {
   };
 
   const getVisitByCasesCountPerDay = (interval, date) => {
-    Axios.post(ip.concat("getVisitCountPerDay"), {
+    Axios.post(ip.concat("getVisitByCasesCountPerDay"), {
       interval: interval,
       date: date,
     }).then((response) => {
+      console.log(response.data);
       setvisitByCasesCountPerDay(response.data);
     });
   };
@@ -93,8 +94,8 @@ export const AdminPanel = () => {
     getTotalVisitsByCases();
     getTypeScores();
     getTypeScoresByCases();
-    getVisitCountPerDay("month", "2022-09-13");
-    getVisitByCasesCountPerDay("week", "2022-09-13");
+    getVisitCountPerDay("month", "2022-09-1");
+    getVisitByCasesCountPerDay("month", "2022-09-1");
   }, []);
 
   return (

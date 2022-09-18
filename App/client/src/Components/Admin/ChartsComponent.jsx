@@ -43,10 +43,8 @@ export const ChartsComponent = ({
 export default ChartsComponent;
 // eslint-disable-next-line
 const StatsWrapper = styled.div`
-  width: 50vw;
-  height: 40vh;
-  min-width: 300px;
-  min-height: 500px;
+  height: 100%;
+  width: 100%;
   background-color: white;
   display: flex;
   flex-direction: column;

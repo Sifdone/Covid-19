@@ -14,13 +14,10 @@ export const StatsComponents = ({
   const [typeScoreByCasesState, settypeScoreByCasesState] = useState([]);
 
   useEffect(() => {
-    console.log(typeScore);
-    //console.log(typeScore);
     settypeScoreState(typeScore);
   }, [typeScore]);
 
   useEffect(() => {
-    //console.log(typeScore);
     settypeScoreByCasesState(typeScoresByCases);
   }, [typeScoresByCases]);
 
@@ -44,9 +41,9 @@ export const StatsComponents = ({
         <ListContainer>
           <ListTitle>Visits per Location Type</ListTitle>
           <List>
-            {typeScoreState.map((type) => {
+            {typeScoreState.map((type, i) => {
               return (
-                <TypeItem>
+                <TypeItem key={i}>
                   <TypeText>{type.type}</TypeText>
                   <TypeText>{type.score}</TypeText>
                 </TypeItem>
@@ -58,9 +55,9 @@ export const StatsComponents = ({
         <ListContainer>
           <ListTitle>Visits by Confirmed Cases per Location Type</ListTitle>
           <List>
-            {typeScoreByCasesState.map((type) => {
+            {typeScoreByCasesState.map((type, i) => {
               return (
-                <TypeItem>
+                <TypeItem key={i}>
                   <TypeText>{type.type}</TypeText>
                   <TypeText>{type.score}</TypeText>
                 </TypeItem>
